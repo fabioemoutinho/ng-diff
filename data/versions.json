@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "angularMajor": 20,
+    "cliVersion": "20.3.22",
+    "nodeVersion": 20,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "20.3.0",
+      "cliVersion": "20.3.22",
+      "typescriptVersion": "5.9.2",
+      "rxjsVersion": "7.8.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 21,
+    "cliVersion": "21.2.6",
+    "nodeVersion": 20,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "21.2.0",
+      "cliVersion": "21.2.6",
+      "typescriptVersion": "5.9.2",
+      "rxjsVersion": "7.8.0",
+      "nodeEngine": null
+    }
+  }
+]

@@ -119,10 +119,13 @@ function extractPackageMeta(files) {
 
 function generateSnapshot(entry) {
   const { angularMajor, cliVersion, nodeVersion } = entry;
-  const tmpDir = path.join(os.tmpdir(), `ng-diff-tmp-${angularMajor}`);
+  // Use a parent temp dir; ng new will create a 'ng-diff-app' subdirectory inside it
+  const tmpParent = path.join(os.tmpdir(), 'ng-diff-tmp-' + angularMajor);
+  const appDir = path.join(tmpParent, 'ng-diff-app');
 
   // Clean up any previous temp dir
-  if (fs.existsSync(tmpDir)) fs.rmSync(tmpDir, { recursive: true, force: true });
+  if (fs.existsSync(tmpParent)) fs.rmSync(tmpParent, { recursive: true, force: true });
+  fs.mkdirSync(tmpParent, { recursive: true });
 
   const isLegacyCli = cliVersion.startsWith('1.');
   const newFlags = isLegacyCli
@@ -131,22 +134,28 @@ function generateSnapshot(entry) {
 
   let cmd;
   if (IS_CI) {
-    // Node version already set by actions/setup-node
-    cmd = `npx --yes @angular/cli@${cliVersion} new ng-diff-app ${newFlags} --directory "${tmpDir}"`;
+    // Node version already set by actions/setup-node; run ng new from tmpParent
+    cmd = 'npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
   } else {
     // Use fnm exec to run with the correct Node version
-    cmd = `fnm exec --using=${nodeVersion} -- npx --yes @angular/cli@${cliVersion} new ng-diff-app ${newFlags} --directory "${tmpDir}"`;
+    cmd = 'fnm exec --using=' + nodeVersion + ' -- npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
   }
 
-  console.log(`  [Angular ${angularMajor}] Running: ${cmd}`);
-  const result = runCommand(cmd, { timeout: 300000 });
+  console.log('  [Angular ' + angularMajor + '] Running in ' + tmpParent + ': ' + cmd);
+  const result = runCommand(cmd, { timeout: 300000, cwd: tmpParent });
 
   if (result.status !== 0) {
-    console.error(`  [Angular ${angularMajor}] FAILED:\n${result.stderr}`);
+    console.error('  [Angular ' + angularMajor + '] FAILED:\n' + result.stderr);
     return false;
   }
 
-  const files = collectFiles(tmpDir);
+  if (!fs.existsSync(appDir)) {
+    console.error('  [Angular ' + angularMajor + '] FAILED: app directory not found at ' + appDir);
+    console.error('  stdout: ' + result.stdout.slice(0, 500));
+    return false;
+  }
+
+  const files = collectFiles(appDir);
   const packageMeta = extractPackageMeta(files);
 
   const snapshot = {
@@ -163,9 +172,9 @@ function generateSnapshot(entry) {
   fs.writeFileSync(path.join(outDir, 'default.json'), JSON.stringify(snapshot, null, 2));
 
   // Clean up temp dir
-  fs.rmSync(tmpDir, { recursive: true, force: true });
+  fs.rmSync(tmpParent, { recursive: true, force: true });
 
-  console.log(`  [Angular ${angularMajor}] Done. Files: ${Object.keys(files).length}`);
+  console.log('  [Angular ' + angularMajor + '] Done. Files: ' + Object.keys(files).length);
   return true;
 }
 
