@@ -186,7 +186,7 @@
         "supported": "^13.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "16.20.2",
         "supported": "^12.20.0 || ^14.15.0 || ^16.10.0"
       },
       "typescript": {
@@ -211,7 +211,7 @@
         "supported": "^14.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "16.20.2",
         "supported": "^14.15.0 || ^16.10.0"
       },
       "typescript": {
@@ -236,7 +236,7 @@
         "supported": "^15.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "18.20.8",
         "supported": "^14.20.0 || ^16.13.0 || ^18.10.0"
       },
       "typescript": {
@@ -261,7 +261,7 @@
         "supported": "^16.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "18.20.8",
         "supported": "^16.14.0 || ^18.10.0"
       },
       "typescript": {
@@ -286,7 +286,7 @@
         "supported": "^17.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "20.20.2",
         "supported": "^18.13.0 || ^20.9.0"
       },
       "typescript": {
@@ -311,7 +311,7 @@
         "supported": "^18.0.0"
       },
       "node": {
-        "version": "22.16.0",
+        "version": "22.22.2",
         "supported": "^18.19.1 || ^20.11.1 || ^22.0.0"
       },
       "typescript": {
@@ -336,7 +336,7 @@
         "supported": "^19.0.0"
       },
       "node": {
-        "version": "22.16.0",
+        "version": "22.22.2",
         "supported": "^18.19.1 || ^20.11.1 || ^22.0.0"
       },
       "typescript": {
@@ -361,7 +361,7 @@
         "supported": "^20.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "24.14.1",
         "supported": "^20.19.0 || ^22.12.0 || ^24.0.0"
       },
       "typescript": {
@@ -386,7 +386,7 @@
         "supported": "^21.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "24.14.1",
         "supported": "^20.19.0 || ^22.12.0 || ^24.0.0"
       },
       "typescript": {
