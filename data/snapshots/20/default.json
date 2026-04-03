@@ -1,14 +1,17 @@
 {
   "angularMajor": 20,
   "cliVersion": "20.3.22",
-  "nodeVersion": 20,
+  "nodeVersion": 24,
+  "nodeVersionUsed": "22.17.0",
+  "nodeRange": "^20.19.0 || ^22.12.0 || ^24.0.0",
+  "tsRange": ">=5.8.0 <6.0.0",
+  "rxjsRange": "^6.5.3 || ^7.4.0",
   "generatedAt": "2026-04-03",
   "packageMeta": {
     "angularVersion": "20.3.0",
     "cliVersion": "20.3.22",
     "typescriptVersion": "5.9.2",
-    "rxjsVersion": "7.8.0",
-    "nodeEngine": null
+    "rxjsVersion": "7.8.0"
   },
   "files": {
     ".editorconfig": "# Editor configuration, see https://editorconfig.org\r\nroot = true\r\n\r\n[*]\r\ncharset = utf-8\r\nindent_style = space\r\nindent_size = 2\r\ninsert_final_newline = true\r\ntrim_trailing_whitespace = true\r\n\r\n[*.ts]\r\nquote_type = single\r\nij_typescript_use_double_quotes = false\r\n\r\n[*.md]\r\nmax_line_length = off\r\ntrim_trailing_whitespace = false\r\n",
