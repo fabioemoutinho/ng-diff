@@ -63,6 +63,17 @@ function mkdirSafe(dir) {
   try { fs.mkdirSync(dir); } catch (e) { if (e.code !== 'EEXIST') throw e; }
 }
 
+// Node 14 compat: fs.rmSync({ recursive, force }) was added in Node 14.14
+function rmRecursive(dir) {
+  if (!fs.existsSync(dir)) return;
+  var entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (var i = 0; i < entries.length; i++) {
+    var full = path.join(dir, entries[i].name);
+    if (entries[i].isDirectory()) { rmRecursive(full); } else { fs.unlinkSync(full); }
+  }
+  fs.rmdirSync(dir);
+}
+
 // --- Node version manager detection ---
 // Supports: nvm-windows (direct binary path), fnm (exec), Unix nvm (exec).
 // Falls back to current Node with a warning if no manager or version not installed.
@@ -190,7 +201,7 @@ function generateSnapshot(entry) {
   const appDir = path.join(tmpParent, 'ng-diff-app');
 
   // Clean up any previous temp dir
-  if (fs.existsSync(tmpParent)) fs.rmSync(tmpParent, { recursive: true, force: true });
+  if (fs.existsSync(tmpParent)) rmRecursive(tmpParent);
 
   // Remove stale angular-cli.json / .angular-cli.json from os.tmpdir() root — old CLI
   // versions create these and ng new refuses to run if it finds a project above cwd.
@@ -277,7 +288,7 @@ function generateSnapshot(entry) {
   fs.writeFileSync(path.join(outDir, 'default.json'), JSON.stringify(snapshot, null, 2));
 
   // Clean up temp dir
-  fs.rmSync(tmpParent, { recursive: true, force: true });
+  rmRecursive(tmpParent);
 
   console.log('  [Angular ' + angularMajor + '] Done. Files: ' + Object.keys(files).length);
   return true;
