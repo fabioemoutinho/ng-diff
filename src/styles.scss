@@ -1,0 +1,49 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$violet-palette,
+  ),
+  typography: (
+    brand-family: 'Inter, Roboto, sans-serif',
+    plain-family: 'Inter, Roboto, sans-serif',
+  ),
+));
+
+html {
+  @include mat.all-component-themes($theme);
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+/* Diff line colours */
+.diff-added {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+}
+.diff-removed {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+.diff-hunk {
+  background: rgba(56, 139, 253, 0.1);
+  color: #388bfd;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }

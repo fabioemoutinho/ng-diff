@@ -1,0 +1,81 @@
+.tree-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #21262d;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+}
+
+.changed-toggle {
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  color: rgba(255,255,255,0.5);
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: border-color 0.15s, color 0.15s;
+
+  &.active {
+    border-color: #58a6ff;
+    color: #58a6ff;
+  }
+}
+
+.tree-container {
+  padding: 4px 0;
+}
+
+.node-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding-right: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 1px 4px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+  transition: background 0.1s;
+
+  &:hover { background: rgba(255,255,255,0.05); }
+}
+
+.tree-node.selected > .node-row {
+  background: rgba(56, 139, 253, 0.15);
+  color: #58a6ff;
+}
+
+.node-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.4);
+}
+
+.node-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Status colours */
+.status-added { color: #3fb950; .node-icon, .status-icon { color: #3fb950; } }
+.status-removed { color: #f85149; .node-icon, .status-icon { color: #f85149; } }
+.status-modified { color: #d29922; .node-icon, .status-icon { color: #d29922; } }

@@ -1,0 +1,26 @@
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.toolbar-brand {
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+
+  .brand-ng { color: #fff; }
+  .brand-diff { color: rgba(255,255,255,0.65); }
+}
+
+.toolbar-spacer { flex: 1; }
+
+.main-content {
+  margin-top: 64px;
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,60 @@
+name: Generate snapshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: 'JSON array of Angular major versions to generate, e.g. [17,18,21]'
+        required: true
+        default: '[]'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - node-version: 8
+            angular-majors: '[4,5,6]'
+          - node-version: 10
+            angular-majors: '[7,8]'
+          - node-version: 12
+            angular-majors: '[9,10,11]'
+          - node-version: 14
+            angular-majors: '[12]'
+          - node-version: 16
+            angular-majors: '[13,14]'
+          - node-version: 18
+            angular-majors: '[15,16]'
+          - node-version: 20
+            angular-majors: '[17,18,19,20,21]'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Generate snapshots for this Node group
+        run: |
+          node scripts/generate.js \
+            --versions '${{ inputs.versions }}' \
+            --node-group '${{ matrix.angular-majors }}'
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit for node ${{ matrix.node-version }}"
+            exit 0
+          fi
+          # Pull latest to avoid push conflicts from parallel matrix jobs
+          git pull --rebase origin main || true
+          git commit -m "chore: regenerate snapshots for angular ${{ matrix.angular-majors }}"
+          git push

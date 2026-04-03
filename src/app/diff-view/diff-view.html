@@ -1,0 +1,93 @@
+<div class="diff-view">
+  <!-- Toolbar row -->
+  <div class="controls-bar">
+    <div class="version-selectors">
+      <mat-form-field appearance="outline" class="version-select">
+        <mat-label>From</mat-label>
+        <mat-select [value]="fromMajor()" (valueChange)="onFromChange($event)">
+          @for (v of versions(); track v.angularMajor) {
+            <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+
+      <mat-form-field appearance="outline" class="version-select">
+        <mat-label>To</mat-label>
+        <mat-select [value]="toMajor()" (valueChange)="onToChange($event)">
+          @for (v of versions(); track v.angularMajor) {
+            <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="controls-actions">
+      <button mat-stroked-button (click)="jumpToLatest()" matTooltip="Jump to latest versions">
+        <mat-icon>fast_forward</mat-icon> Latest
+      </button>
+      <button mat-icon-button (click)="copyShareUrl()" matTooltip="Copy shareable URL">
+        <mat-icon>share</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary bar -->
+  @if (summary()) {
+    <div class="summary-bar">
+      <span class="summary-added">+{{ summary()!.added }} added</span>
+      <span class="summary-removed">−{{ summary()!.removed }} removed</span>
+      <span class="summary-modified">~{{ summary()!.modified }} modified</span>
+    </div>
+  }
+
+  <!-- Version meta cards -->
+  @if (fromSnapshot() && toSnapshot()) {
+    <div class="meta-cards">
+      <app-version-meta-card [snapshot]="fromSnapshot()!" label="From" />
+      <app-version-meta-card [snapshot]="toSnapshot()!" label="To" />
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40" />
+      <span>Loading snapshots…</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-state">{{ error() }}</div>
+  }
+
+  <!-- Main diff area -->
+  @if (diffResult()) {
+    <mat-tab-group class="diff-tabs" animationDuration="0">
+      <mat-tab label="Files">
+        <div class="diff-body">
+          <div class="file-tree-panel">
+            <app-file-tree
+              [diffResult]="diffResult()!"
+              [selectedFile]="selectedFile()"
+              (fileSelected)="onFileSelect($event)"
+            />
+          </div>
+          <div class="file-diff-panel">
+            <app-file-diff
+              [file]="selectedFile()"
+              [diffResult]="diffResult()!"
+            />
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Dependencies">
+        @if (fromSnapshot() && toSnapshot()) {
+          <app-deps-tab [from]="fromSnapshot()!" [to]="toSnapshot()!" />
+        }
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

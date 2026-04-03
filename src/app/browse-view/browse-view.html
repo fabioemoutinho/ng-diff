@@ -1,0 +1,40 @@
+<div class="browse-view">
+  <div class="controls-bar">
+    <mat-form-field appearance="outline" class="version-select">
+      <mat-label>Version</mat-label>
+      <mat-select [value]="selectedMajor()" (valueChange)="onVersionChange($event)">
+        @for (v of versions(); track v.angularMajor) {
+          <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (snapshot()) {
+      <app-version-meta-card [snapshot]="snapshot()!" label="Version" />
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state"><mat-spinner diameter="32" /></div>
+  }
+
+  @if (snapshot()) {
+    <div class="browse-body">
+      <div class="file-list-panel">
+        @for (file of sortedFiles(); track file) {
+          <div class="file-item" [class.selected]="file === selectedFile()" (click)="selectedFile.set(file)">
+            {{ file }}
+          </div>
+        }
+      </div>
+      <div class="file-content-panel">
+        @if (selectedFile()) {
+          <div class="file-header">{{ selectedFile() }}</div>
+          <pre class="file-content">{{ selectedContent() }}</pre>
+        } @else {
+          <div class="empty-state">Select a file to view its contents</div>
+        }
+      </div>
+    </div>
+  }
+</div>

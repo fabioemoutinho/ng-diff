@@ -1,0 +1,27 @@
+<div class="meta-card">
+  <div class="meta-label">{{ label }}</div>
+  <div class="meta-row">
+    <span class="meta-key">Angular</span>
+    <span class="meta-val">{{ snapshot.packageMeta.angularVersion ?? 'v' + snapshot.angularMajor }}</span>
+  </div>
+  <div class="meta-row">
+    <span class="meta-key">CLI</span>
+    <span class="meta-val">{{ snapshot.cliVersion }}</span>
+  </div>
+  @if (snapshot.packageMeta.typescriptVersion) {
+    <div class="meta-row">
+      <span class="meta-key">TypeScript</span>
+      <span class="meta-val">{{ snapshot.packageMeta.typescriptVersion }}</span>
+    </div>
+  }
+  @if (snapshot.packageMeta.rxjsVersion) {
+    <div class="meta-row">
+      <span class="meta-key">RxJS</span>
+      <span class="meta-val">{{ snapshot.packageMeta.rxjsVersion }}</span>
+    </div>
+  }
+  <div class="meta-row">
+    <span class="meta-key">Node</span>
+    <span class="meta-val">{{ snapshot.packageMeta.nodeEngine ?? snapshot.nodeVersion + '.x' }}</span>
+  </div>
+</div>

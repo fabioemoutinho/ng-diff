@@ -1,0 +1,26 @@
+@if (changes.length === 0) {
+  <div class="empty">No dependency changes</div>
+} @else {
+  <table class="deps-table">
+    <thead>
+      <tr>
+        <th>Package</th>
+        <th>Before</th>
+        <th>After</th>
+        <th>Change</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (c of changes; track c.name) {
+        <tr [class]="'type-' + changeType(c)">
+          <td class="pkg-name">{{ c.name }}</td>
+          <td class="version">{{ c.fromVersion ?? '—' }}</td>
+          <td class="version">{{ c.toVersion ?? '—' }}</td>
+          <td class="type-badge">
+            <span [class]="'badge badge-' + changeType(c)">{{ changeType(c) }}</span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,83 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(255,255,255,0.25);
+
+  mat-icon { font-size: 48px; width: 48px; height: 48px; }
+  p { margin: 8px 0 0; font-size: 0.9rem; }
+}
+
+.diff-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #21262d;
+  background: #161b22;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.status-badge {
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-family: sans-serif;
+
+  &.badge-added { background: rgba(63,185,80,0.2); color: #3fb950; }
+  &.badge-removed { background: rgba(248,81,73,0.2); color: #f85149; }
+  &.badge-modified { background: rgba(210,153,34,0.2); color: #d29922; }
+  &.badge-unchanged { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+}
+
+.diff-content {
+  overflow-x: auto;
+}
+
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Roboto Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+}
+
+tr {
+  &.line-added { background: rgba(63,185,80,0.1); }
+  &.line-removed { background: rgba(248,81,73,0.1); }
+  &.line-hunk { background: rgba(56,139,253,0.08); }
+}
+
+.line-gutter {
+  width: 32px;
+  padding: 0 8px;
+  text-align: center;
+  user-select: none;
+  color: rgba(255,255,255,0.3);
+  border-right: 1px solid #21262d;
+  font-size: 0.7rem;
+
+  .line-added & { color: #3fb950; }
+  .line-removed & { color: #f85149; }
+  .line-hunk & { color: #388bfd; }
+}
+
+.line-content {
+  padding: 0 12px;
+
+  pre {
+    margin: 0;
+    white-space: pre;
+    color: #e6edf3;
+
+    .line-added & { color: #aff5b4; }
+    .line-removed & { color: #ffdcd7; }
+    .line-hunk & { color: #79c0ff; }
+  }
+}

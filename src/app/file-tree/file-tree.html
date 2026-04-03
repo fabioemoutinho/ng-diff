@@ -1,0 +1,43 @@
+<div class="tree-header">
+  <span class="tree-title">Files</span>
+  <button class="changed-toggle" [class.active]="changedOnly()" (click)="changedOnly.set(!changedOnly())"
+          matTooltip="Show changed files only">
+    Changed only
+  </button>
+</div>
+
+<div class="tree-container">
+  <ng-container *ngTemplateOutlet="nodeList; context: { nodes: filteredTree() }" />
+</div>
+
+<ng-template #nodeList let-nodes="nodes">
+  @for (node of nodes; track node.path) {
+    <div class="tree-node" [class.selected]="node.path === selectedFile">
+      <div class="node-row"
+           [style.padding-left.px]="node.path.split('/').length * 12"
+           [class]="'status-' + statusClass(node.status)"
+           (click)="node.isDir ? toggleDir(node) : selectFile(node)">
+
+        @if (node.isDir) {
+          <mat-icon class="node-icon dir-icon">
+            {{ node.expanded ? 'folder_open' : 'folder' }}
+          </mat-icon>
+        } @else {
+          <mat-icon class="node-icon file-icon">description</mat-icon>
+        }
+
+        <span class="node-name">{{ node.name }}</span>
+
+        @if (node.status && node.status !== 'unchanged') {
+          <mat-icon class="status-icon" [matTooltip]="node.status">
+            {{ statusIcon(node.status) }}
+          </mat-icon>
+        }
+      </div>
+
+      @if (node.isDir && node.expanded && node.children.length) {
+        <ng-container *ngTemplateOutlet="nodeList; context: { nodes: node.children }" />
+      }
+    </div>
+  }
+</ng-template>

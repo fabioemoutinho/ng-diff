@@ -1,0 +1,29 @@
+@if (!entry()) {
+  <div class="empty-state">
+    <mat-icon>diff</mat-icon>
+    <p>Select a file to view its diff</p>
+  </div>
+} @else {
+  <div class="diff-header">
+    <span class="file-path">{{ _file() }}</span>
+    <span class="status-badge" [class]="'badge-' + entry()!.status">
+      {{ entry()!.status }}
+    </span>
+  </div>
+  <div class="diff-content">
+    <table class="diff-table">
+      <tbody>
+        @for (line of lines(); track $index) {
+          <tr [class]="'line-' + line.type">
+            <td class="line-gutter">
+              @if (line.type === 'added') { + }
+              @else if (line.type === 'removed') { - }
+              @else if (line.type === 'hunk') { @@ }
+            </td>
+            <td class="line-content"><pre>{{ line.content }}</pre></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

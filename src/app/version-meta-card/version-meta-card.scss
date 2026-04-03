@@ -1,0 +1,32 @@
+.meta-card {
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-width: 160px;
+}
+
+.meta-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 4px;
+}
+
+.meta-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.meta-key {
+  color: rgba(255,255,255,0.4);
+  min-width: 72px;
+}
+
+.meta-val {
+  font-family: 'Roboto Mono', monospace;
+  color: #e6edf3;
+}

@@ -1,0 +1,48 @@
+.empty {
+  padding: 32px 16px;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+}
+
+.deps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.4);
+    border-bottom: 1px solid #21262d;
+  }
+
+  td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #161b22;
+    vertical-align: middle;
+  }
+}
+
+.pkg-name {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+}
+
+.version {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+
+  &.badge-added { background: rgba(63,185,80,0.2); color: #3fb950; }
+  &.badge-removed { background: rgba(248,81,73,0.2); color: #f85149; }
+  &.badge-changed { background: rgba(210,153,34,0.2); color: #d29922; }
+}

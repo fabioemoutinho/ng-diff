@@ -1,0 +1,38 @@
+name: Check for new CLI versions
+
+on:
+  schedule:
+    - cron: '0 6,18 * * *'   # Twice daily: 6am and 6pm UTC
+  workflow_dispatch:           # Manual trigger
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check for outdated versions
+        id: check
+        run: node scripts/check-versions.js
+
+      - name: Dispatch generate workflow if needed
+        if: steps.check.outputs.versions_to_update != '[]' && steps.check.outputs.versions_to_update != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const versions = '${{ steps.check.outputs.versions_to_update }}';
+            console.log('Dispatching generate for versions:', versions);
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'generate.yml',
+              ref: 'main',
+              inputs: { versions }
+            });
