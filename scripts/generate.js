@@ -97,40 +97,51 @@ function hasNodeManager() {
 }
 
 // Build the npx command prefix for a given node major version.
-// Returns { prefix: string, nodeExact: string } where prefix is prepended to npx invocation.
+// Returns { npxCmd: string, nodeExact: string } for the given node major.
+// Throws if the required version is not installed — no fallbacks.
 function resolveNodeCommand(nodeVersionMajor) {
-  var currentMajor = parseInt(process.version.replace('v', '').split('.')[0]);
-  var currentExact = process.version.replace(/^v/, '');
-
   // nvm-windows: call node/npx directly from the versioned directory
   var nvmHome = getNvmWindowsHome();
   if (nvmHome) {
     var versionDir = getNvmWindowsVersionDir(nvmHome, nodeVersionMajor);
     if (!versionDir) {
-      console.warn('  [warn] nvm: Node ' + nodeVersionMajor + ' not installed. Run: nvm install ' + nodeVersionMajor);
-      console.warn('  [warn] Falling back to current Node ' + process.version);
-      return { nodeExe: 'node', npxCmd: 'npx', nodeExact: currentExact };
+      throw new Error(
+        'Node ' + nodeVersionMajor + ' is not installed in nvm.\n' +
+        'Run: nvm install ' + nodeVersionMajor
+      );
     }
-    var nodeExe = '"' + path.join(versionDir, 'node.exe') + '"';
-    var npxCmd = '"' + path.join(versionDir, 'npx.cmd') + '"';
+    // Node 8 on nvm-windows installs node64.exe instead of node.exe
+    var nodeExeName = fs.existsSync(path.join(versionDir, 'node.exe')) ? 'node.exe' : 'node64.exe';
+    var nodeExe = '"' + path.join(versionDir, nodeExeName) + '"';
     var versionResult = runCommand(nodeExe + ' --version');
-    var nodeExact = versionResult.status === 0 ? versionResult.stdout.trim().replace(/^v/, '') : nodeVersionMajor + '.x';
-    return { nodeExe: nodeExe, npxCmd: npxCmd, nodeExact: nodeExact };
+    if (versionResult.status !== 0) {
+      throw new Error('Failed to query version from ' + nodeExe + ': ' + versionResult.stderr);
+    }
+    // npx.cmd falls back to global node when node.exe is absent (old nvm-windows).
+    // Build the npx invocation directly via the node binary + npx-cli.js instead.
+    var npxCliJs = path.join(versionDir, 'node_modules', 'npm', 'bin', 'npx-cli.js');
+    var npxExe = fs.existsSync(npxCliJs)
+      ? nodeExe + ' "' + npxCliJs + '"'
+      : '"' + path.join(versionDir, 'npx.cmd') + '"';
+    return { npxCmd: npxExe, nodeExact: versionResult.stdout.trim().replace(/^v/, '') };
   }
 
   // fnm
   if (hasFnm()) {
-    var fnmResult = runCommand('fnm exec --using=' + nodeVersionMajor + ' -- node --version');
-    var fnmExact = fnmResult.status === 0 ? fnmResult.stdout.trim().replace(/^v/, '') : nodeVersionMajor + '.x';
-    return { nodeExe: null, npxCmd: null, fnmUsing: nodeVersionMajor, nodeExact: fnmExact };
+    var fnmCheck = runCommand('fnm exec --using=' + nodeVersionMajor + ' -- node --version');
+    if (fnmCheck.status !== 0) {
+      throw new Error(
+        'Node ' + nodeVersionMajor + ' is not installed in fnm.\n' +
+        'Run: fnm install ' + nodeVersionMajor
+      );
+    }
+    return { fnmUsing: nodeVersionMajor, npxCmd: null, nodeExact: fnmCheck.stdout.trim().replace(/^v/, '') };
   }
 
-  // No manager — warn and use current Node
-  if (currentMajor !== nodeVersionMajor) {
-    console.warn('  [warn] No Node version manager found. Using current Node ' + process.version + ' (expected major ' + nodeVersionMajor + ').');
-    console.warn('  [hint] Install nvm-windows: https://github.com/coreybutler/nvm-windows/releases');
-  }
-  return { nodeExe: 'node', npxCmd: 'npx', nodeExact: currentExact };
+  throw new Error(
+    'No Node version manager found (nvm-windows or fnm).\n' +
+    'Install nvm-windows: https://github.com/coreybutler/nvm-windows/releases'
+  );
 }
 
 function collectFiles(dir, baseDir = dir) {
@@ -284,8 +295,9 @@ function updateVersionsIndex() {
 
 async function main() {
   if (!IS_CI && !hasNodeManager()) {
-    console.warn('[warn] No Node version manager (nvm, fnm) found. Using current Node ' + process.version + ' for all versions.');
-    console.warn('[hint] Install nvm-windows: https://github.com/coreybutler/nvm-windows/releases');
+    console.error('No Node version manager found (nvm-windows or fnm).');
+    console.error('Install nvm-windows: https://github.com/coreybutler/nvm-windows/releases');
+    process.exit(1);
   }
 
   mkdirSafe(SNAPSHOTS_DIR);
