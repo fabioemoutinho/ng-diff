@@ -96,11 +96,12 @@ function hasNodeManager() {
   return false;
 }
 
-// Build the npx command prefix for a given node major version.
-// Returns { npxCmd: string, nodeExact: string } for the given node major.
+// Returns a descriptor for running commands with a specific node major.
 // Throws if the required version is not installed — no fallbacks.
+//
+// nvm-windows: { type:'nvm-windows', nodeExe, npmCli, nodeExact }
+//        fnm:  { type:'fnm', fnmUsing, nodeExact }
 function resolveNodeCommand(nodeVersionMajor) {
-  // nvm-windows: call node/npx directly from the versioned directory
   var nvmHome = getNvmWindowsHome();
   if (nvmHome) {
     var versionDir = getNvmWindowsVersionDir(nvmHome, nodeVersionMajor);
@@ -113,20 +114,19 @@ function resolveNodeCommand(nodeVersionMajor) {
     // Node 8 on nvm-windows installs node64.exe instead of node.exe
     var nodeExeName = fs.existsSync(path.join(versionDir, 'node.exe')) ? 'node.exe' : 'node64.exe';
     var nodeExe = '"' + path.join(versionDir, nodeExeName) + '"';
+    var npmCli = '"' + path.join(versionDir, 'node_modules', 'npm', 'bin', 'npm-cli.js') + '"';
     var versionResult = runCommand(nodeExe + ' --version');
     if (versionResult.status !== 0) {
       throw new Error('Failed to query version from ' + nodeExe + ': ' + versionResult.stderr);
     }
-    // npx.cmd falls back to global node when node.exe is absent (old nvm-windows).
-    // Build the npx invocation directly via the node binary + npx-cli.js instead.
-    var npxCliJs = path.join(versionDir, 'node_modules', 'npm', 'bin', 'npx-cli.js');
-    var npxExe = fs.existsSync(npxCliJs)
-      ? nodeExe + ' "' + npxCliJs + '"'
-      : '"' + path.join(versionDir, 'npx.cmd') + '"';
-    return { npxCmd: npxExe, nodeExact: versionResult.stdout.trim().replace(/^v/, '') };
+    return {
+      type: 'nvm-windows',
+      nodeExe: nodeExe,
+      npmCli: npmCli,
+      nodeExact: versionResult.stdout.trim().replace(/^v/, ''),
+    };
   }
 
-  // fnm
   if (hasFnm()) {
     var fnmCheck = runCommand('fnm exec --using=' + nodeVersionMajor + ' -- node --version');
     if (fnmCheck.status !== 0) {
@@ -135,7 +135,7 @@ function resolveNodeCommand(nodeVersionMajor) {
         'Run: fnm install ' + nodeVersionMajor
       );
     }
-    return { fnmUsing: nodeVersionMajor, npxCmd: null, nodeExact: fnmCheck.stdout.trim().replace(/^v/, '') };
+    return { type: 'fnm', fnmUsing: nodeVersionMajor, nodeExact: fnmCheck.stdout.trim().replace(/^v/, '') };
   }
 
   throw new Error(
@@ -166,27 +166,21 @@ function collectFiles(dir, baseDir = dir) {
   return files;
 }
 
-function extractPackageMeta(files) {
-  const pkg = files['package.json'];
-  if (!pkg) return {};
-  try {
-    const json = JSON.parse(pkg);
-    const deps = { ...json.dependencies, ...json.devDependencies };
-    function cleanVer(v) { return v ? v.replace(/[\^~>=<]/g, '').split(' ')[0] : null; }
-    return {
-      angularVersion: cleanVer(deps['@angular/core']),
-      cliVersion: cleanVer(deps['@angular/cli']),
-      typescriptVersion: cleanVer(deps['typescript']),
-      rxjsVersion: cleanVer(deps['rxjs']),
-    };
-  } catch (e) {
-    return {};
-  }
-}
-
-function getExactNodeVersion(nodeVersionMajor) {
-  if (IS_CI) return process.version.replace(/^v/, '');
-  return resolveNodeCommand(nodeVersionMajor).nodeExact;
+function buildDeps(files, entry, nodeVersionUsed) {
+  var pkg = {};
+  try { pkg = JSON.parse(files['package.json'] || '{}'); } catch (e) {}
+  var allDeps = {};
+  if (pkg.dependencies) Object.assign(allDeps, pkg.dependencies);
+  if (pkg.devDependencies) Object.assign(allDeps, pkg.devDependencies);
+  function cleanVer(v) { return v ? v.replace(/[\^~>=<]/g, '').split(' ')[0] : null; }
+  var cliRange = entry.cliVersion.startsWith('1.') ? '^1.0.0' : '^' + entry.angularMajor + '.0.0';
+  return {
+    angular:    { version: cleanVer(allDeps['@angular/core']) },
+    cli:        { version: entry.cliVersion, supported: cliRange },
+    node:       { version: nodeVersionUsed, supported: entry.nodeRange },
+    typescript: { version: cleanVer(allDeps['typescript']), supported: entry.tsRange },
+    rxjs:       { version: cleanVer(allDeps['rxjs']), supported: entry.rxjsRange },
+  };
 }
 
 function generateSnapshot(entry) {
@@ -212,18 +206,44 @@ function generateSnapshot(entry) {
     ? '--skip-git --skip-install'
     : '--defaults --skip-git --skip-install';
 
-  var ngNewArgs = '--yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
-  var resolved = IS_CI ? null : resolveNodeCommand(nodeVersion);
-  var cmd;
-  if (IS_CI) {
-    cmd = 'npx ' + ngNewArgs;
-  } else if (resolved.fnmUsing !== undefined) {
-    cmd = 'fnm exec --using=' + resolved.fnmUsing + ' -- npx ' + ngNewArgs;
-  } else {
-    cmd = resolved.npxCmd + ' ' + ngNewArgs;
+  var resolved;
+  if (!IS_CI) {
+    try {
+      resolved = resolveNodeCommand(nodeVersion);
+    } catch (e) {
+      console.error('  [Angular ' + angularMajor + '] SKIPPED: ' + e.message);
+      return false;
+    }
   }
 
-  console.log('  [Angular ' + angularMajor + '] Running in ' + tmpParent + ': ' + cmd);
+  // Build install + ng-new commands based on the resolver type.
+  // nvm-windows: old npx is unreliable for .cmd binaries, so install CLI via npm
+  //              then call ng binary directly.
+  // fnm / CI:    npx handles everything cleanly.
+  var installCmd = null;
+  var cmd;
+  if (IS_CI) {
+    cmd = 'npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
+  } else if (resolved.type === 'nvm-windows') {
+    installCmd = resolved.nodeExe + ' ' + resolved.npmCli +
+      ' install @angular/cli@' + cliVersion + ' --no-save --prefix .';
+    cmd = resolved.nodeExe + ' node_modules/@angular/cli/bin/ng new ng-diff-app ' + newFlags;
+  } else {
+    cmd = 'fnm exec --using=' + resolved.fnmUsing +
+      ' -- npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
+  }
+
+  if (installCmd) {
+    console.log('  [Angular ' + angularMajor + '] Installing CLI ' + cliVersion + '...');
+    var installResult = runCommand(installCmd, { timeout: 120000, cwd: tmpParent });
+    if (installResult.status !== 0) {
+      console.error('  [Angular ' + angularMajor + '] CLI install FAILED');
+      if (installResult.stderr) console.error('  STDERR: ' + installResult.stderr.slice(0, 500));
+      return false;
+    }
+  }
+
+  console.log('  [Angular ' + angularMajor + '] Running: ' + cmd);
   const result = runCommand(cmd, { timeout: 300000, cwd: tmpParent });
 
   if (result.status !== 0) {
@@ -240,21 +260,14 @@ function generateSnapshot(entry) {
   }
 
   const files = collectFiles(appDir);
-  const packageMeta = extractPackageMeta(files);
   const nodeVersionUsed = IS_CI
     ? process.version.replace(/^v/, '')
     : (resolved ? resolved.nodeExact : process.version.replace(/^v/, ''));
 
   const snapshot = {
     angularMajor,
-    cliVersion,
-    nodeVersion,
-    nodeVersionUsed,
-    nodeRange: entry.nodeRange,
-    tsRange: entry.tsRange,
-    rxjsRange: entry.rxjsRange,
     generatedAt: new Date().toISOString().split('T')[0],
-    packageMeta,
+    deps: buildDeps(files, entry, nodeVersionUsed),
     files,
   };
 
@@ -275,17 +288,20 @@ function updateVersionsIndex() {
     const snapshotPath = path.join(SNAPSHOTS_DIR, String(entry.angularMajor), 'default.json');
     if (!fs.existsSync(snapshotPath)) continue;
     const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+    var cliRange = entry.cliVersion.startsWith('1.') ? '^1.0.0' : '^' + entry.angularMajor + '.0.0';
+    // Support both new (deps) and old (packageMeta) snapshot formats
+    var deps = snapshot.deps || {};
+    var pm = snapshot.packageMeta || {};
     entries.push({
       angularMajor: snapshot.angularMajor,
-      cliVersion: snapshot.cliVersion,
-      nodeVersion: snapshot.nodeVersion,
-      nodeVersionUsed: snapshot.nodeVersionUsed || null,
-      // Static ranges always sourced from VERSION_MAP (authoritative, not snapshot)
-      nodeRange: entry.nodeRange,
-      tsRange: entry.tsRange,
-      rxjsRange: entry.rxjsRange,
       generatedAt: snapshot.generatedAt,
-      packageMeta: snapshot.packageMeta,
+      deps: {
+        angular:    { version: (deps.angular && deps.angular.version) || pm.angularVersion || null },
+        cli:        { version: entry.cliVersion, supported: cliRange },
+        node:       { version: (deps.node && deps.node.version) || snapshot.nodeVersionUsed || null, supported: entry.nodeRange },
+        typescript: { version: (deps.typescript && deps.typescript.version) || pm.typescriptVersion || null, supported: entry.tsRange },
+        rxjs:       { version: (deps.rxjs && deps.rxjs.version) || pm.rxjsVersion || null, supported: entry.rxjsRange },
+      },
     });
   }
   mkdirSafe(DATA_DIR);

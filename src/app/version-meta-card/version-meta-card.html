@@ -1,41 +1,51 @@
 <div class="meta-card">
   <div class="meta-label">{{ label }}</div>
+
   <div class="meta-row">
     <span class="meta-key">Angular</span>
-    <span class="meta-val">{{ snapshot.packageMeta.angularVersion ?? 'v' + snapshot.angularMajor }}</span>
+    <span class="meta-val">{{ snapshot.deps.angular.version ?? 'v' + snapshot.angularMajor }}</span>
   </div>
+
   <div class="meta-row">
     <span class="meta-key">CLI</span>
-    <span class="meta-val">{{ snapshot.cliVersion }}</span>
+    <span class="meta-val">
+      {{ snapshot.deps.cli.version }}
+      @if (snapshot.deps.cli.supported) {
+        <span class="meta-range">{{ snapshot.deps.cli.supported }}</span>
+      }
+    </span>
   </div>
-  @if (snapshot.packageMeta.typescriptVersion) {
+
+  @if (snapshot.deps.typescript.version) {
     <div class="meta-row">
       <span class="meta-key">TypeScript</span>
       <span class="meta-val">
-        {{ snapshot.packageMeta.typescriptVersion }}
-        @if (versionEntry?.tsRange) {
-          <span class="meta-range">{{ versionEntry!.tsRange }}</span>
+        {{ snapshot.deps.typescript.version }}
+        @if (snapshot.deps.typescript.supported) {
+          <span class="meta-range">{{ snapshot.deps.typescript.supported }}</span>
         }
       </span>
     </div>
   }
-  @if (snapshot.packageMeta.rxjsVersion) {
+
+  @if (snapshot.deps.rxjs.version) {
     <div class="meta-row">
       <span class="meta-key">RxJS</span>
       <span class="meta-val">
-        {{ snapshot.packageMeta.rxjsVersion }}
-        @if (versionEntry?.rxjsRange) {
-          <span class="meta-range">{{ versionEntry!.rxjsRange }}</span>
+        {{ snapshot.deps.rxjs.version }}
+        @if (snapshot.deps.rxjs.supported) {
+          <span class="meta-range">{{ snapshot.deps.rxjs.supported }}</span>
         }
       </span>
     </div>
   }
+
   <div class="meta-row">
     <span class="meta-key">Node</span>
     <span class="meta-val">
-      {{ snapshot.nodeVersionUsed }}
-      @if (versionEntry?.nodeRange) {
-        <span class="meta-range">{{ versionEntry!.nodeRange }}</span>
+      {{ snapshot.deps.node.version }}
+      @if (snapshot.deps.node.supported) {
+        <span class="meta-range">{{ snapshot.deps.node.supported }}</span>
       }
     </span>
   </div>

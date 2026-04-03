@@ -45,8 +45,8 @@
   <!-- Version meta cards -->
   @if (fromSnapshot() && toSnapshot()) {
     <div class="meta-cards">
-      <app-version-meta-card [snapshot]="fromSnapshot()!" [versionEntry]="fromVersionEntry()" label="From" />
-      <app-version-meta-card [snapshot]="toSnapshot()!" [versionEntry]="toVersionEntry()" label="To" />
+      <app-version-meta-card [snapshot]="fromSnapshot()!" label="From" />
+      <app-version-meta-card [snapshot]="toSnapshot()!" label="To" />
     </div>
   }
 

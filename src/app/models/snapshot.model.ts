@@ -1,32 +1,23 @@
-export interface PackageMeta {
-  angularVersion: string | null;
-  cliVersion: string | null;
-  typescriptVersion: string | null;
-  rxjsVersion: string | null;
+export interface DepEntry {
+  version: string | null;
+  supported?: string;
+}
+
+export interface SnapshotDeps {
+  angular: DepEntry;
+  cli: DepEntry;
+  node: DepEntry;
+  typescript: DepEntry;
+  rxjs: DepEntry;
 }
 
 export interface VersionEntry {
   angularMajor: number;
-  cliVersion: string;
-  nodeVersion: number;
-  nodeVersionUsed: string | null;
-  nodeRange: string;
-  tsRange: string;
-  rxjsRange: string;
   generatedAt: string;
-  packageMeta: PackageMeta;
+  deps: SnapshotDeps;
 }
 
-export interface Snapshot {
-  angularMajor: number;
-  cliVersion: string;
-  nodeVersion: number;
-  nodeVersionUsed?: string;
-  nodeRange?: string;
-  tsRange?: string;
-  rxjsRange?: string;
-  generatedAt: string;
-  packageMeta: PackageMeta;
+export interface Snapshot extends VersionEntry {
   files: Record<string, string>;
 }
 
