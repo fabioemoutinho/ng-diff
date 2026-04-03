@@ -54,7 +54,10 @@ jobs:
             echo "No changes to commit for node ${{ matrix.node-version }}"
             exit 0
           fi
-          # Pull latest to avoid push conflicts from parallel matrix jobs
-          git pull --rebase origin main || true
           git commit -m "chore: regenerate snapshots for angular ${{ matrix.angular-majors }}"
-          git push
+          # Retry push up to 5 times to handle parallel matrix job conflicts
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push && break
+            echo "Push attempt $i failed, retrying..."
+            sleep $((i * 3))
+          done

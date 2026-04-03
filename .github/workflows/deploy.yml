@@ -4,12 +4,15 @@ on:
   push:
     branches: [main]
     paths:
-      - 'data/**'
       - 'src/**'
       - 'public/**'
       - 'angular.json'
       - 'package.json'
       - 'package-lock.json'
+  workflow_run:
+    workflows: ["Generate snapshots"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
