@@ -1,17 +1,26 @@
 {
   "angularMajor": 19,
-  "cliVersion": "19.2.23",
-  "nodeVersion": 22,
-  "nodeVersionUsed": "22.16.0",
-  "nodeRange": "^18.19.1 || ^20.11.1 || ^22.0.0",
-  "tsRange": ">=5.5.0 <5.9.0",
-  "rxjsRange": "^6.5.3 || ^7.4.0",
   "generatedAt": "2026-04-03",
-  "packageMeta": {
-    "angularVersion": "19.2.0",
-    "cliVersion": "19.2.23",
-    "typescriptVersion": "5.7.2",
-    "rxjsVersion": "7.8.0"
+  "deps": {
+    "angular": {
+      "version": "19.2.0"
+    },
+    "cli": {
+      "version": "19.2.23",
+      "supported": "^19.0.0"
+    },
+    "node": {
+      "version": "22.16.0",
+      "supported": "^18.19.1 || ^20.11.1 || ^22.0.0"
+    },
+    "typescript": {
+      "version": "5.7.2",
+      "supported": ">=5.5.0 <5.9.0"
+    },
+    "rxjs": {
+      "version": "7.8.0",
+      "supported": "^6.5.3 || ^7.4.0"
+    }
   },
   "files": {
     ".editorconfig": "# Editor configuration, see https://editorconfig.org\r\nroot = true\r\n\r\n[*]\r\ncharset = utf-8\r\nindent_style = space\r\nindent_size = 2\r\ninsert_final_newline = true\r\ntrim_trailing_whitespace = true\r\n\r\n[*.ts]\r\nquote_type = single\r\nij_typescript_use_double_quotes = false\r\n\r\n[*.md]\r\nmax_line_length = off\r\ntrim_trailing_whitespace = false\r\n",
