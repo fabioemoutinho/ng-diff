@@ -236,7 +236,7 @@
         "supported": "^15.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "18.20.8",
         "supported": "^14.20.0 || ^16.13.0 || ^18.10.0"
       },
       "typescript": {
@@ -261,7 +261,7 @@
         "supported": "^16.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "18.20.8",
         "supported": "^16.14.0 || ^18.10.0"
       },
       "typescript": {
