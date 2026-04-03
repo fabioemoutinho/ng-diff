@@ -86,7 +86,7 @@
         "supported": "^9.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "12.22.12",
         "supported": "^10.13.0 || ^12.11.0"
       },
       "typescript": {
@@ -111,7 +111,7 @@
         "supported": "^10.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "12.22.12",
         "supported": "^10.13.0 || ^12.11.0"
       },
       "typescript": {
@@ -136,7 +136,7 @@
         "supported": "^11.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "12.22.12",
         "supported": "^10.13.0 || ^12.11.0"
       },
       "typescript": {
