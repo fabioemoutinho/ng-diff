@@ -217,13 +217,14 @@ function generateSnapshot(entry) {
   }
 
   // Build install + ng-new commands based on the resolver type.
-  // nvm-windows: old npx is unreliable for .cmd binaries, so install CLI via npm
-  //              then call ng binary directly.
-  // fnm / CI:    npx handles everything cleanly.
+  // nvm-windows / CI: old npx is unreliable across npm versions, so install CLI via npm
+  //                   then call ng binary directly.
+  // fnm:              npx handles everything cleanly.
   var installCmd = null;
   var cmd;
   if (IS_CI) {
-    cmd = 'npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
+    installCmd = 'npm install @angular/cli@' + cliVersion + ' --no-save --prefix .';
+    cmd = 'node node_modules/@angular/cli/bin/ng new ng-diff-app ' + newFlags;
   } else if (resolved.type === 'nvm-windows') {
     installCmd = resolved.nodeExe + ' ' + resolved.npmCli +
       ' install @angular/cli@' + cliVersion + ' --no-save --prefix .';
