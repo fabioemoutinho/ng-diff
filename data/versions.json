@@ -286,7 +286,7 @@
         "supported": "^17.0.0"
       },
       "node": {
-        "version": "22.17.0",
+        "version": "20.20.2",
         "supported": "^18.13.0 || ^20.9.0"
       },
       "typescript": {
