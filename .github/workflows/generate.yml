@@ -5,8 +5,12 @@ on:
     inputs:
       versions:
         description: 'JSON array of Angular major versions to generate, e.g. [17,18,21]'
-        required: true
+        required: false
         default: '[]'
+      force:
+        description: 'Force regeneration of all versions in each node group, ignoring the versions filter'
+        type: boolean
+        default: false
 
 jobs:
   generate:
@@ -45,9 +49,13 @@ jobs:
 
       - name: Generate snapshots for this Node group
         run: |
-          node scripts/generate.js \
-            --versions '${{ inputs.versions }}' \
-            --node-group '${{ matrix.angular-majors }}'
+          if [ "${{ inputs.force }}" = "true" ]; then
+            node scripts/generate.js --node-group '${{ matrix.angular-majors }}'
+          else
+            node scripts/generate.js \
+              --versions '${{ inputs.versions }}' \
+              --node-group '${{ matrix.angular-majors }}'
+          fi
 
       - name: Commit and push updated data
         run: |
