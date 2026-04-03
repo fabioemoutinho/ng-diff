@@ -155,15 +155,21 @@ function resolveNodeCommand(nodeVersionMajor) {
   );
 }
 
-function collectFiles(dir, baseDir = dir) {
+function collectFiles(dir, baseDir) {
+  if (baseDir === undefined) baseDir = dir;
   const files = {};
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  // withFileTypes added in Node 10.10; fall back to plain readdir on Node 8
+  var rawEntries = fs.readdirSync(dir);
+  var entries = rawEntries.map(function(name) {
+    var full = path.join(dir, name);
+    return { name: name, _isDir: fs.statSync(full).isDirectory() };
+  });
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     const relPath = path.relative(baseDir, fullPath).replace(/\\/g, '/');
     // Skip node_modules, .git, and binary-like files
     if (entry.name === 'node_modules' || entry.name === '.git') continue;
-    if (entry.isDirectory()) {
+    if (entry._isDir) {
       Object.assign(files, collectFiles(fullPath, baseDir));
     } else {
       try {
