@@ -1,5 +1,96 @@
 [
   {
+    "angularMajor": 6,
+    "cliVersion": "6.2.9",
+    "nodeVersion": 8,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "6.1.0",
+      "cliVersion": "6.2.9",
+      "typescriptVersion": "2.9.2",
+      "rxjsVersion": "6.2.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 7,
+    "cliVersion": "7.3.10",
+    "nodeVersion": 10,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "7.2.0",
+      "cliVersion": "7.3.10",
+      "typescriptVersion": "3.2.2",
+      "rxjsVersion": "6.3.3",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 8,
+    "cliVersion": "8.3.29",
+    "nodeVersion": 10,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "8.2.14",
+      "cliVersion": "8.3.29",
+      "typescriptVersion": "3.5.3",
+      "rxjsVersion": "6.4.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 9,
+    "cliVersion": "9.1.15",
+    "nodeVersion": 12,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "9.1.13",
+      "cliVersion": "9.1.15",
+      "typescriptVersion": "3.8.3",
+      "rxjsVersion": "6.5.4",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 10,
+    "cliVersion": "10.2.4",
+    "nodeVersion": 12,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "10.2.5",
+      "cliVersion": "10.2.4",
+      "typescriptVersion": "4.0.2",
+      "rxjsVersion": "6.6.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 11,
+    "cliVersion": "11.2.19",
+    "nodeVersion": 12,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "11.2.14",
+      "cliVersion": "11.2.19",
+      "typescriptVersion": "4.1.5",
+      "rxjsVersion": "6.6.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 12,
+    "cliVersion": "12.2.18",
+    "nodeVersion": 14,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "12.2.0",
+      "cliVersion": "12.2.18",
+      "typescriptVersion": "4.3.5",
+      "rxjsVersion": "6.6.0",
+      "nodeEngine": null
+    }
+  },
+  {
     "angularMajor": 13,
     "cliVersion": "13.3.11",
     "nodeVersion": 16,
@@ -22,6 +113,71 @@
       "cliVersion": "14.2.13",
       "typescriptVersion": "4.7.2",
       "rxjsVersion": "7.5.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 15,
+    "cliVersion": "15.2.11",
+    "nodeVersion": 18,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "15.2.0",
+      "cliVersion": "15.2.11",
+      "typescriptVersion": "4.9.4",
+      "rxjsVersion": "7.8.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 16,
+    "cliVersion": "16.2.16",
+    "nodeVersion": 18,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "16.2.0",
+      "cliVersion": "16.2.16",
+      "typescriptVersion": "5.1.3",
+      "rxjsVersion": "7.8.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 17,
+    "cliVersion": "17.3.17",
+    "nodeVersion": 20,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "17.3.0",
+      "cliVersion": "17.3.17",
+      "typescriptVersion": "5.4.2",
+      "rxjsVersion": "7.8.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 18,
+    "cliVersion": "18.2.21",
+    "nodeVersion": 20,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "18.2.0",
+      "cliVersion": "18.2.21",
+      "typescriptVersion": "5.5.2",
+      "rxjsVersion": "7.8.0",
+      "nodeEngine": null
+    }
+  },
+  {
+    "angularMajor": 19,
+    "cliVersion": "19.2.23",
+    "nodeVersion": 20,
+    "generatedAt": "2026-04-03",
+    "packageMeta": {
+      "angularVersion": "19.2.0",
+      "cliVersion": "19.2.23",
+      "typescriptVersion": "5.7.2",
+      "rxjsVersion": "7.8.0",
       "nodeEngine": null
     }
   },
