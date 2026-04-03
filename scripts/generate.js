@@ -66,10 +66,10 @@ function mkdirSafe(dir) {
 // Node 14 compat: fs.rmSync({ recursive, force }) was added in Node 14.14
 function rmRecursive(dir) {
   if (!fs.existsSync(dir)) return;
-  var entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (var i = 0; i < entries.length; i++) {
-    var full = path.join(dir, entries[i].name);
-    if (entries[i].isDirectory()) { rmRecursive(full); } else { fs.unlinkSync(full); }
+  var names = fs.readdirSync(dir);
+  for (var i = 0; i < names.length; i++) {
+    var full = path.join(dir, names[i]);
+    if (fs.statSync(full).isDirectory()) { rmRecursive(full); } else { fs.unlinkSync(full); }
   }
   fs.rmdirSync(dir);
 }
