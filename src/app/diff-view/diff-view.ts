@@ -54,6 +54,13 @@ export class DiffViewComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
 
+  fromVersionEntry = computed(() =>
+    this.versions().find(v => v.angularMajor === this.fromMajor()) ?? null
+  );
+  toVersionEntry = computed(() =>
+    this.versions().find(v => v.angularMajor === this.toMajor()) ?? null
+  );
+
   summary = computed(() => {
     const diff = this.diffResult();
     if (!diff) return null;

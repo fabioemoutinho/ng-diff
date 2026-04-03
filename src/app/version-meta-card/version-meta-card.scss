@@ -29,4 +29,14 @@
 .meta-val {
   font-family: 'Roboto Mono', monospace;
   color: #e6edf3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.meta-range {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.35);
+  font-family: 'Roboto Mono', monospace;
 }

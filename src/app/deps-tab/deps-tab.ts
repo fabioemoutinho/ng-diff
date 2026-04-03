@@ -1,6 +1,6 @@
 import { Component, Input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DiffService } from '../services/diff.service';
+import { DiffService, DepChange } from '../services/diff.service';
 import { Snapshot } from '../models/snapshot.model';
 
 @Component({
@@ -17,15 +17,19 @@ export class DepsTabComponent {
 
   private _from?: Snapshot;
   private _to?: Snapshot;
-  changes: ReturnType<DiffService['parseDepsChange']> = [];
+
+  dependencies: DepChange[] = [];
+  devDependencies: DepChange[] = [];
 
   private recompute() {
     if (this._from && this._to) {
-      this.changes = this.diffService.parseDepsChange(this._from, this._to);
+      const all = this.diffService.parseDepsChange(this._from, this._to);
+      this.dependencies = all.filter(c => c.group === 'dependencies');
+      this.devDependencies = all.filter(c => c.group === 'devDependencies');
     }
   }
 
-  changeType(c: { fromVersion: string | null; toVersion: string | null }): 'added' | 'removed' | 'changed' {
+  changeType(c: DepChange): 'added' | 'removed' | 'changed' {
     if (!c.fromVersion) return 'added';
     if (!c.toVersion) return 'removed';
     return 'changed';

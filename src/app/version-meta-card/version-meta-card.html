@@ -11,17 +11,32 @@
   @if (snapshot.packageMeta.typescriptVersion) {
     <div class="meta-row">
       <span class="meta-key">TypeScript</span>
-      <span class="meta-val">{{ snapshot.packageMeta.typescriptVersion }}</span>
+      <span class="meta-val">
+        {{ snapshot.packageMeta.typescriptVersion }}
+        @if (versionEntry?.tsRange) {
+          <span class="meta-range">{{ versionEntry!.tsRange }}</span>
+        }
+      </span>
     </div>
   }
   @if (snapshot.packageMeta.rxjsVersion) {
     <div class="meta-row">
       <span class="meta-key">RxJS</span>
-      <span class="meta-val">{{ snapshot.packageMeta.rxjsVersion }}</span>
+      <span class="meta-val">
+        {{ snapshot.packageMeta.rxjsVersion }}
+        @if (versionEntry?.rxjsRange) {
+          <span class="meta-range">{{ versionEntry!.rxjsRange }}</span>
+        }
+      </span>
     </div>
   }
   <div class="meta-row">
     <span class="meta-key">Node</span>
-    <span class="meta-val">{{ snapshot.packageMeta.nodeEngine ?? snapshot.nodeVersion + '.x' }}</span>
+    <span class="meta-val">
+      {{ snapshot.nodeVersionUsed ?? (snapshot.nodeVersion + '.x') }}
+      @if (versionEntry?.nodeRange) {
+        <span class="meta-range">{{ versionEntry!.nodeRange }}</span>
+      }
+    </span>
   </div>
 </div>

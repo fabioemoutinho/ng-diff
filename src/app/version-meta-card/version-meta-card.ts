@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Snapshot } from '../models/snapshot.model';
+import { Snapshot, VersionEntry } from '../models/snapshot.model';
 
 @Component({
   selector: 'app-version-meta-card',
@@ -10,5 +10,6 @@ import { Snapshot } from '../models/snapshot.model';
 })
 export class VersionMetaCardComponent {
   @Input() snapshot!: Snapshot;
+  @Input() versionEntry?: VersionEntry | null;
   @Input() label = '';
 }

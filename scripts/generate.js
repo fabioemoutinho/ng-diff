@@ -110,11 +110,21 @@ function extractPackageMeta(files) {
       cliVersion: cleanVer(deps['@angular/cli']),
       typescriptVersion: cleanVer(deps['typescript']),
       rxjsVersion: cleanVer(deps['rxjs']),
-      nodeEngine: (json.engines && json.engines.node) || null,
     };
   } catch (e) {
     return {};
   }
+}
+
+function getExactNodeVersion(nodeVersionMajor) {
+  if (IS_CI) {
+    return process.version.replace(/^v/, '');
+  }
+  var result = runCommand('fnm exec --using=' + nodeVersionMajor + ' -- node --version');
+  if (result.status === 0) {
+    return result.stdout.trim().replace(/^v/, '');
+  }
+  return String(nodeVersionMajor) + '.x';
 }
 
 function generateSnapshot(entry) {
@@ -125,7 +135,15 @@ function generateSnapshot(entry) {
 
   // Clean up any previous temp dir
   if (fs.existsSync(tmpParent)) fs.rmSync(tmpParent, { recursive: true, force: true });
-  fs.mkdirSync(tmpParent, { recursive: true });
+
+  // Remove stale angular-cli.json / .angular-cli.json from os.tmpdir() root — old CLI
+  // versions create these and ng new refuses to run if it finds a project above cwd.
+  ['angular-cli.json', '.angular-cli.json', 'angular.json'].forEach(function(f) {
+    var stale = path.join(os.tmpdir(), f);
+    if (fs.existsSync(stale)) { fs.unlinkSync(stale); }
+  });
+
+  fs.mkdirSync(tmpParent);
 
   const isLegacyCli = cliVersion.startsWith('1.');
   const newFlags = isLegacyCli
@@ -145,7 +163,9 @@ function generateSnapshot(entry) {
   const result = runCommand(cmd, { timeout: 300000, cwd: tmpParent });
 
   if (result.status !== 0) {
-    console.error('  [Angular ' + angularMajor + '] FAILED:\n' + result.stderr);
+    console.error('  [Angular ' + angularMajor + '] FAILED (exit ' + result.status + ')');
+    if (result.stderr) console.error('  STDERR: ' + result.stderr.slice(0, 1000));
+    if (result.stdout) console.error('  STDOUT: ' + result.stdout.slice(0, 1000));
     return false;
   }
 
@@ -157,11 +177,16 @@ function generateSnapshot(entry) {
 
   const files = collectFiles(appDir);
   const packageMeta = extractPackageMeta(files);
+  const nodeVersionUsed = getExactNodeVersion(nodeVersion);
 
   const snapshot = {
     angularMajor,
     cliVersion,
     nodeVersion,
+    nodeVersionUsed,
+    nodeRange: entry.nodeRange,
+    tsRange: entry.tsRange,
+    rxjsRange: entry.rxjsRange,
     generatedAt: new Date().toISOString().split('T')[0],
     packageMeta,
     files,
@@ -188,13 +213,18 @@ function updateVersionsIndex() {
       angularMajor: snapshot.angularMajor,
       cliVersion: snapshot.cliVersion,
       nodeVersion: snapshot.nodeVersion,
+      nodeVersionUsed: snapshot.nodeVersionUsed || null,
+      // Static ranges always sourced from VERSION_MAP (authoritative, not snapshot)
+      nodeRange: entry.nodeRange,
+      tsRange: entry.tsRange,
+      rxjsRange: entry.rxjsRange,
       generatedAt: snapshot.generatedAt,
       packageMeta: snapshot.packageMeta,
     });
   }
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(VERSIONS_FILE, JSON.stringify(entries, null, 2));
-  console.log(`Updated versions.json with ${entries.length} entries.`);
+  console.log('Updated versions.json with ' + entries.length + ' entries.');
 }
 
 async function main() {

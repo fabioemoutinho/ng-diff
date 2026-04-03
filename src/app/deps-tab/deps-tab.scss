@@ -4,6 +4,20 @@
   text-align: center;
 }
 
+.section-header {
+  padding: 10px 12px 4px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  border-bottom: 1px solid #21262d;
+  margin-top: 8px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
 .deps-table {
   width: 100%;
   border-collapse: collapse;

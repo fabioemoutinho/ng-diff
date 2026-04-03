@@ -1,26 +1,55 @@
-@if (changes.length === 0) {
+@if (dependencies.length === 0 && devDependencies.length === 0) {
   <div class="empty">No dependency changes</div>
 } @else {
-  <table class="deps-table">
-    <thead>
-      <tr>
-        <th>Package</th>
-        <th>Before</th>
-        <th>After</th>
-        <th>Change</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (c of changes; track c.name) {
-        <tr [class]="'type-' + changeType(c)">
-          <td class="pkg-name">{{ c.name }}</td>
-          <td class="version">{{ c.fromVersion ?? '—' }}</td>
-          <td class="version">{{ c.toVersion ?? '—' }}</td>
-          <td class="type-badge">
-            <span [class]="'badge badge-' + changeType(c)">{{ changeType(c) }}</span>
-          </td>
+  @if (dependencies.length > 0) {
+    <div class="section-header">dependencies</div>
+    <table class="deps-table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Before</th>
+          <th>After</th>
+          <th>Change</th>
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (c of dependencies; track c.name) {
+          <tr [class]="'type-' + changeType(c)">
+            <td class="pkg-name">{{ c.name }}</td>
+            <td class="version">{{ c.fromVersion ?? '—' }}</td>
+            <td class="version">{{ c.toVersion ?? '—' }}</td>
+            <td class="type-badge">
+              <span [class]="'badge badge-' + changeType(c)">{{ changeType(c) }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (devDependencies.length > 0) {
+    <div class="section-header">devDependencies</div>
+    <table class="deps-table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Before</th>
+          <th>After</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of devDependencies; track c.name) {
+          <tr [class]="'type-' + changeType(c)">
+            <td class="pkg-name">{{ c.name }}</td>
+            <td class="version">{{ c.fromVersion ?? '—' }}</td>
+            <td class="version">{{ c.toVersion ?? '—' }}</td>
+            <td class="type-badge">
+              <span [class]="'badge badge-' + changeType(c)">{{ changeType(c) }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
 }
