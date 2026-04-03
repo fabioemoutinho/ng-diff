@@ -2,13 +2,16 @@
   "angularMajor": 11,
   "cliVersion": "11.2.19",
   "nodeVersion": 12,
+  "nodeVersionUsed": "22.17.0",
+  "nodeRange": "^10.13.0 || ^12.11.0",
+  "tsRange": ">=4.0.0 <4.2.0",
+  "rxjsRange": "^6.5.3",
   "generatedAt": "2026-04-03",
   "packageMeta": {
     "angularVersion": "11.2.14",
     "cliVersion": "11.2.19",
     "typescriptVersion": "4.1.5",
-    "rxjsVersion": "6.6.0",
-    "nodeEngine": null
+    "rxjsVersion": "6.6.0"
   },
   "files": {
     ".browserslistrc": "# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.\n# For additional information regarding the format and rule options, please see:\n# https://github.com/browserslist/browserslist#queries\n\n# For the full list of supported browsers by the Angular framework, please see:\n# https://angular.io/guide/browser-support\n\n# You can see what browsers were selected by your queries by running:\n#   npx browserslist\n\nlast 1 Chrome version\nlast 1 Firefox version\nlast 2 Edge major versions\nlast 2 Safari major versions\nlast 2 iOS major versions\nFirefox ESR\nnot IE 11 # Angular supports IE 11 only as an opt-in. To opt-in, remove the 'not' prefix on this line.\n",

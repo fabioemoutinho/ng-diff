@@ -58,22 +58,79 @@ function runCommand(cmd, options = {}) {
   return spawnSync(cmd, { shell: true, stdio: 'pipe', encoding: 'utf8', ...options });
 }
 
-function hasFnm() {
-  const result = runCommand('fnm --version');
-  return result.status === 0;
+// Node 8 compat: fs.mkdirSync({ recursive: true }) was added in Node 10.12
+function mkdirSafe(dir) {
+  try { fs.mkdirSync(dir); } catch (e) { if (e.code !== 'EEXIST') throw e; }
 }
 
-function getNodeVersionForMajor(nodeVersionMajor) {
-  // Check if fnm has this version installed
-  const result = runCommand(`fnm list`);
-  if (result.status !== 0) return null;
-  const lines = result.stdout.split('\n').map(l => l.trim()).filter(Boolean);
-  // Find a version matching the major
-  const match = lines.find(l => {
-    const ver = l.replace(/[^0-9.]/g, '').split('.')[0];
-    return parseInt(ver) === nodeVersionMajor;
+// --- Node version manager detection ---
+// Supports: nvm-windows (direct binary path), fnm (exec), Unix nvm (exec).
+// Falls back to current Node with a warning if no manager or version not installed.
+
+function getNvmWindowsHome() {
+  var nvmHome = process.env.NVM_HOME;
+  if (nvmHome && fs.existsSync(path.join(nvmHome, 'nvm.exe'))) return nvmHome;
+  // Fallback: check default Windows location
+  var appdata = process.env.APPDATA || '';
+  var candidate = path.join(appdata, 'nvm');
+  if (fs.existsSync(path.join(candidate, 'nvm.exe'))) return candidate;
+  return null;
+}
+
+function getNvmWindowsVersionDir(nvmHome, nodeVersionMajor) {
+  var entries;
+  try { entries = fs.readdirSync(nvmHome); } catch (e) { return null; }
+  var match = entries.filter(function(d) { return /^v\d+\./.test(d); }).find(function(e) {
+    return parseInt(e.replace('v', '').split('.')[0]) === nodeVersionMajor;
   });
-  return match ? match.replace(/[^0-9.]/g, '') : null;
+  return match ? path.join(nvmHome, match) : null;
+}
+
+function hasFnm() {
+  return runCommand('fnm --version').status === 0;
+}
+
+function hasNodeManager() {
+  if (getNvmWindowsHome()) return true;
+  if (hasFnm()) return true;
+  return false;
+}
+
+// Build the npx command prefix for a given node major version.
+// Returns { prefix: string, nodeExact: string } where prefix is prepended to npx invocation.
+function resolveNodeCommand(nodeVersionMajor) {
+  var currentMajor = parseInt(process.version.replace('v', '').split('.')[0]);
+  var currentExact = process.version.replace(/^v/, '');
+
+  // nvm-windows: call node/npx directly from the versioned directory
+  var nvmHome = getNvmWindowsHome();
+  if (nvmHome) {
+    var versionDir = getNvmWindowsVersionDir(nvmHome, nodeVersionMajor);
+    if (!versionDir) {
+      console.warn('  [warn] nvm: Node ' + nodeVersionMajor + ' not installed. Run: nvm install ' + nodeVersionMajor);
+      console.warn('  [warn] Falling back to current Node ' + process.version);
+      return { nodeExe: 'node', npxCmd: 'npx', nodeExact: currentExact };
+    }
+    var nodeExe = '"' + path.join(versionDir, 'node.exe') + '"';
+    var npxCmd = '"' + path.join(versionDir, 'npx.cmd') + '"';
+    var versionResult = runCommand(nodeExe + ' --version');
+    var nodeExact = versionResult.status === 0 ? versionResult.stdout.trim().replace(/^v/, '') : nodeVersionMajor + '.x';
+    return { nodeExe: nodeExe, npxCmd: npxCmd, nodeExact: nodeExact };
+  }
+
+  // fnm
+  if (hasFnm()) {
+    var fnmResult = runCommand('fnm exec --using=' + nodeVersionMajor + ' -- node --version');
+    var fnmExact = fnmResult.status === 0 ? fnmResult.stdout.trim().replace(/^v/, '') : nodeVersionMajor + '.x';
+    return { nodeExe: null, npxCmd: null, fnmUsing: nodeVersionMajor, nodeExact: fnmExact };
+  }
+
+  // No manager — warn and use current Node
+  if (currentMajor !== nodeVersionMajor) {
+    console.warn('  [warn] No Node version manager found. Using current Node ' + process.version + ' (expected major ' + nodeVersionMajor + ').');
+    console.warn('  [hint] Install nvm-windows: https://github.com/coreybutler/nvm-windows/releases');
+  }
+  return { nodeExe: 'node', npxCmd: 'npx', nodeExact: currentExact };
 }
 
 function collectFiles(dir, baseDir = dir) {
@@ -117,14 +174,8 @@ function extractPackageMeta(files) {
 }
 
 function getExactNodeVersion(nodeVersionMajor) {
-  if (IS_CI) {
-    return process.version.replace(/^v/, '');
-  }
-  var result = runCommand('fnm exec --using=' + nodeVersionMajor + ' -- node --version');
-  if (result.status === 0) {
-    return result.stdout.trim().replace(/^v/, '');
-  }
-  return String(nodeVersionMajor) + '.x';
+  if (IS_CI) return process.version.replace(/^v/, '');
+  return resolveNodeCommand(nodeVersionMajor).nodeExact;
 }
 
 function generateSnapshot(entry) {
@@ -150,13 +201,15 @@ function generateSnapshot(entry) {
     ? '--skip-git --skip-install'
     : '--defaults --skip-git --skip-install';
 
-  let cmd;
+  var ngNewArgs = '--yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
+  var resolved = IS_CI ? null : resolveNodeCommand(nodeVersion);
+  var cmd;
   if (IS_CI) {
-    // Node version already set by actions/setup-node; run ng new from tmpParent
-    cmd = 'npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
+    cmd = 'npx ' + ngNewArgs;
+  } else if (resolved.fnmUsing !== undefined) {
+    cmd = 'fnm exec --using=' + resolved.fnmUsing + ' -- npx ' + ngNewArgs;
   } else {
-    // Use fnm exec to run with the correct Node version
-    cmd = 'fnm exec --using=' + nodeVersion + ' -- npx --yes @angular/cli@' + cliVersion + ' new ng-diff-app ' + newFlags;
+    cmd = resolved.npxCmd + ' ' + ngNewArgs;
   }
 
   console.log('  [Angular ' + angularMajor + '] Running in ' + tmpParent + ': ' + cmd);
@@ -177,7 +230,9 @@ function generateSnapshot(entry) {
 
   const files = collectFiles(appDir);
   const packageMeta = extractPackageMeta(files);
-  const nodeVersionUsed = getExactNodeVersion(nodeVersion);
+  const nodeVersionUsed = IS_CI
+    ? process.version.replace(/^v/, '')
+    : (resolved ? resolved.nodeExact : process.version.replace(/^v/, ''));
 
   const snapshot = {
     angularMajor,
@@ -193,7 +248,7 @@ function generateSnapshot(entry) {
   };
 
   const outDir = path.join(SNAPSHOTS_DIR, String(angularMajor));
-  fs.mkdirSync(outDir, { recursive: true });
+  mkdirSafe(outDir);
   fs.writeFileSync(path.join(outDir, 'default.json'), JSON.stringify(snapshot, null, 2));
 
   // Clean up temp dir
@@ -222,18 +277,18 @@ function updateVersionsIndex() {
       packageMeta: snapshot.packageMeta,
     });
   }
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+  mkdirSafe(DATA_DIR);
   fs.writeFileSync(VERSIONS_FILE, JSON.stringify(entries, null, 2));
   console.log('Updated versions.json with ' + entries.length + ' entries.');
 }
 
 async function main() {
-  if (!IS_CI && !hasFnm()) {
-    console.error('fnm is not installed. Install it from https://github.com/Schniz/fnm');
-    process.exit(1);
+  if (!IS_CI && !hasNodeManager()) {
+    console.warn('[warn] No Node version manager (nvm, fnm) found. Using current Node ' + process.version + ' for all versions.');
+    console.warn('[hint] Install nvm-windows: https://github.com/coreybutler/nvm-windows/releases');
   }
 
-  fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
+  mkdirSafe(SNAPSHOTS_DIR);
 
   let successCount = 0;
   for (const major of targetMajors) {

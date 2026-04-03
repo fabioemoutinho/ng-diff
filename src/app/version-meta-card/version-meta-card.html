@@ -33,7 +33,7 @@
   <div class="meta-row">
     <span class="meta-key">Node</span>
     <span class="meta-val">
-      {{ snapshot.nodeVersionUsed ?? (snapshot.nodeVersion + '.x') }}
+      {{ snapshot.nodeVersionUsed }}
       @if (versionEntry?.nodeRange) {
         <span class="meta-range">{{ versionEntry!.nodeRange }}</span>
       }

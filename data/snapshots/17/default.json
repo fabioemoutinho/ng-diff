@@ -2,13 +2,16 @@
   "angularMajor": 17,
   "cliVersion": "17.3.17",
   "nodeVersion": 20,
+  "nodeVersionUsed": "22.17.0",
+  "nodeRange": "^18.13.0 || ^20.9.0",
+  "tsRange": ">=5.2.0 <5.5.0",
+  "rxjsRange": "^6.5.3 || ^7.4.0",
   "generatedAt": "2026-04-03",
   "packageMeta": {
     "angularVersion": "17.3.0",
     "cliVersion": "17.3.17",
     "typescriptVersion": "5.4.2",
-    "rxjsVersion": "7.8.0",
-    "nodeEngine": null
+    "rxjsVersion": "7.8.0"
   },
   "files": {
     ".editorconfig": "# Editor configuration, see https://editorconfig.org\r\nroot = true\r\n\r\n[*]\r\ncharset = utf-8\r\nindent_style = space\r\nindent_size = 2\r\ninsert_final_newline = true\r\ntrim_trailing_whitespace = true\r\n\r\n[*.ts]\r\nquote_type = single\r\n\r\n[*.md]\r\nmax_line_length = off\r\ntrim_trailing_whitespace = false\r\n",
