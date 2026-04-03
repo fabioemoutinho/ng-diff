@@ -64,7 +64,7 @@ async function main() {
     const latestCli = await getLatestCliPatch(entry.cliVersion);
     const currentCli = generatedMap[entry.angularMajor];
     if (currentCli !== latestCli) {
-      console.error(`Angular ${entry.angularMajor}: generated=${currentCli ?? 'none'}, latest=${latestCli}`);
+      console.error('Angular ' + entry.angularMajor + ': generated=' + (currentCli || 'none') + ', latest=' + latestCli);
       needsUpdate.push(entry.angularMajor);
     }
   }

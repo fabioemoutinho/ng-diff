@@ -90,7 +90,7 @@ function collectFiles(dir, baseDir = dir) {
       try {
         const content = fs.readFileSync(fullPath, 'utf8');
         files[relPath] = content;
-      } catch {
+      } catch (e) {
         // Skip binary files
       }
     }
@@ -104,14 +104,15 @@ function extractPackageMeta(files) {
   try {
     const json = JSON.parse(pkg);
     const deps = { ...json.dependencies, ...json.devDependencies };
+    function cleanVer(v) { return v ? v.replace(/[\^~>=<]/g, '').split(' ')[0] : null; }
     return {
-      angularVersion: deps['@angular/core']?.replace(/[\^~>=<]/g, '').split(' ')[0] ?? null,
-      cliVersion: deps['@angular/cli']?.replace(/[\^~>=<]/g, '').split(' ')[0] ?? null,
-      typescriptVersion: deps['typescript']?.replace(/[\^~>=<]/g, '').split(' ')[0] ?? null,
-      rxjsVersion: deps['rxjs']?.replace(/[\^~>=<]/g, '').split(' ')[0] ?? null,
-      nodeEngine: json.engines?.node ?? null,
+      angularVersion: cleanVer(deps['@angular/core']),
+      cliVersion: cleanVer(deps['@angular/cli']),
+      typescriptVersion: cleanVer(deps['typescript']),
+      rxjsVersion: cleanVer(deps['rxjs']),
+      nodeEngine: (json.engines && json.engines.node) || null,
     };
-  } catch {
+  } catch (e) {
     return {};
   }
 }
