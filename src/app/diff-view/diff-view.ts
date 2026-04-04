@@ -119,6 +119,8 @@ export class DiffViewComponent implements OnInit {
   }
 
   private navigate(from: number, to: number) {
+    this.fromMajor.set(from);
+    this.toMajor.set(to);
     this.selectedFile.set(null);
     this.router.navigate(['/diff', from, to]);
     this.loadDiff(from, to);
