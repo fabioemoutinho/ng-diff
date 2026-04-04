@@ -32,7 +32,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
+  column-gap: 6px;
+  row-gap: 0;
 }
 
 .meta-range {

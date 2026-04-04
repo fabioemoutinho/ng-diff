@@ -48,6 +48,7 @@ export class DiffViewComponent implements OnInit {
   fromMajor = signal<number | null>(null);
   toMajor = signal<number | null>(null);
   selectedFile = signal<string | null>(null);
+  treeOpen = signal(false);
 
   fromSnapshot = signal<Snapshot | null>(null);
   toSnapshot = signal<Snapshot | null>(null);
@@ -116,8 +117,14 @@ export class DiffViewComponent implements OnInit {
     return !!versions[fromIdx + dir] && !!versions[toIdx + dir];
   }
 
+  isAtLatest(): boolean {
+    const versions = this.versions();
+    return this.toMajor() === versions[versions.length - 1]?.angularMajor;
+  }
+
   onFileSelect(file: string) {
     this.selectedFile.set(file);
+    this.treeOpen.set(false);
     const from = this.fromMajor()!;
     const to = this.toMajor()!;
     this.router.navigate(['/diff', from, to, encodeURIComponent(file)]);
@@ -129,10 +136,6 @@ export class DiffViewComponent implements OnInit {
     const latest = versions[versions.length - 1].angularMajor;
     const prev = versions[versions.length - 2].angularMajor;
     this.navigate(prev, latest);
-  }
-
-  copyShareUrl() {
-    navigator.clipboard.writeText(window.location.href);
   }
 
   private navigate(from: number, to: number) {

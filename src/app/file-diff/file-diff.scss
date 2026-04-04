@@ -81,3 +81,19 @@ tr {
     .line-hunk & { color: #79c0ff; }
   }
 }
+
+@media (max-width: 600px) {
+  .diff-table {
+    font-size: 0.65rem;
+  }
+
+  .line-gutter {
+    width: 20px;
+    padding: 0 4px;
+    font-size: 0.6rem;
+  }
+
+  .line-content {
+    padding: 0 6px;
+  }
+}

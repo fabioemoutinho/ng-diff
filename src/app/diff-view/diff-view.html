@@ -6,7 +6,7 @@
         <mat-icon>chevron_left</mat-icon>
       </button>
 
-      <mat-form-field appearance="outline" class="version-select">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="version-select">
         <mat-label>From</mat-label>
         <mat-select [value]="fromMajor()" (valueChange)="onFromChange($event)">
           @for (v of versionsDesc(); track v.angularMajor) {
@@ -17,7 +17,7 @@
 
       <mat-icon class="arrow-icon">arrow_forward</mat-icon>
 
-      <mat-form-field appearance="outline" class="version-select">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="version-select">
         <mat-label>To</mat-label>
         <mat-select [value]="toMajor()" (valueChange)="onToChange($event)">
           @for (v of versionsDesc(); track v.angularMajor) {
@@ -29,16 +29,11 @@
       <button mat-icon-button (click)="stepBoth(1)" [disabled]="!canStepBoth(1)" matTooltip="Next versions">
         <mat-icon>chevron_right</mat-icon>
       </button>
+      <button mat-icon-button (click)="jumpToLatest()" [disabled]="isAtLatest()" matTooltip="Jump to latest versions">
+        <mat-icon>last_page</mat-icon>
+      </button>
     </div>
 
-    <div class="controls-actions">
-      <button mat-stroked-button (click)="jumpToLatest()" matTooltip="Jump to latest versions">
-        <mat-icon>fast_forward</mat-icon> Latest
-      </button>
-      <button mat-icon-button (click)="copyShareUrl()" matTooltip="Copy shareable URL">
-        <mat-icon>share</mat-icon>
-      </button>
-    </div>
   </div>
 
   <!-- Summary bar -->
@@ -76,7 +71,14 @@
     <mat-tab-group class="diff-tabs" animationDuration="0">
       <mat-tab label="Files">
         <div class="diff-body">
-          <div class="file-tree-panel">
+          <button mat-mini-fab class="mobile-tree-btn" (click)="treeOpen.set(!treeOpen())">
+            <mat-icon>{{ treeOpen() ? 'close' : 'folder_open' }}</mat-icon>
+          </button>
+
+          @if (treeOpen()) {
+            <div class="tree-backdrop" (click)="treeOpen.set(false)"></div>
+          }
+          <div class="file-tree-panel" [class.mobile-open]="treeOpen()">
             <app-file-tree
               [diffResult]="diffResult()!"
               [selectedFile]="selectedFile()"

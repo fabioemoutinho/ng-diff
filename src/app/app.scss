@@ -13,7 +13,19 @@
   letter-spacing: -0.5px;
 
   .brand-ng { color: #fff; }
-  .brand-diff { color: rgba(255,255,255,0.65); }
+  .brand-diff {
+    color: #ffdcd7;
+    background: rgba(248, 81, 73, 0.2);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-family: 'Roboto Mono', monospace;
+
+    &::before {
+      content: '-';
+      color: #f85149;
+      margin-right: 1px;
+    }
+  }
 }
 
 .toolbar-spacer { flex: 1; }
