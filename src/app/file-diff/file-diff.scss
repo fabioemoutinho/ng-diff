@@ -101,9 +101,18 @@ tr {
   white-space: nowrap;
 
   &.line-no {
-    min-width: 28px;
+    width: 1px;
+    white-space: nowrap;
     border-right: none;
     color: rgba(255,255,255,0.25);
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #0d1117;
+
+    tr.line-added & { background: #111e14; }
+    tr.line-removed & { background: #201115; }
+    tr.line-hunk & { background: #0f1520; }
   }
 
   &.line-sign {
@@ -134,7 +143,16 @@ tr {
 .side-by-side {
   width: auto;
 
-  td.line-no { min-width: 28px; white-space: nowrap; }
+  td.line-no {
+    white-space: nowrap;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #0d1117;
+
+    &.gutter-removed { background: #201115; }
+    &.gutter-added   { background: #111e14; }
+  }
   td.side-left, td.side-right { min-width: 45vw; }
 
   td.side-left { border-right: 1px solid #21262d; }

@@ -40,8 +40,7 @@
         <tbody>
           @for (line of lines(); track $index) {
             <tr [class]="'line-' + line.type">
-              <td class="line-gutter line-no">{{ line.leftLineNo ?? '' }}</td>
-              <td class="line-gutter line-no">{{ line.rightLineNo ?? '' }}</td>
+              <td class="line-gutter line-no">{{ (line.rightLineNo ?? line.leftLineNo) ?? '' }}</td>
               <td class="line-gutter line-sign">
                 @if (line.type === 'added') { + }
                 @else if (line.type === 'removed') { - }

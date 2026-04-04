@@ -28,7 +28,7 @@ export class DiffService {
       }
 
       const patch = (status === 'modified' || status === 'added' || status === 'removed')
-        ? createTwoFilesPatch(file, file, fromContent, toContent, undefined, undefined, { context: 3 })
+        ? createTwoFilesPatch(file, file, fromContent, toContent, undefined, undefined, { context: Number.MAX_SAFE_INTEGER })
         : '';
 
       let addedLines = 0;
