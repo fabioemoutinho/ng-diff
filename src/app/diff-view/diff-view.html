@@ -10,7 +10,7 @@
         <mat-label>From</mat-label>
         <mat-select [value]="fromMajor()" (valueChange)="onFromChange($event)">
           @for (v of versionsDesc(); track v.angularMajor) {
-            <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
+            <mat-option [value]="v.angularMajor">{{ v.angularMajor }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -21,7 +21,7 @@
         <mat-label>To</mat-label>
         <mat-select [value]="toMajor()" (valueChange)="onToChange($event)">
           @for (v of versionsDesc(); track v.angularMajor) {
-            <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
+            <mat-option [value]="v.angularMajor">{{ v.angularMajor }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
