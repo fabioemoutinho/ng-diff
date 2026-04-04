@@ -9,7 +9,7 @@
       <mat-form-field appearance="outline" class="version-select">
         <mat-label>From</mat-label>
         <mat-select [value]="fromMajor()" (valueChange)="onFromChange($event)">
-          @for (v of versions().slice().reverse(); track v.angularMajor) {
+          @for (v of versionsDesc(); track v.angularMajor) {
             <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
           }
         </mat-select>
@@ -20,7 +20,7 @@
       <mat-form-field appearance="outline" class="version-select">
         <mat-label>To</mat-label>
         <mat-select [value]="toMajor()" (valueChange)="onToChange($event)">
-          @for (v of versions().slice().reverse(); track v.angularMajor) {
+          @for (v of versionsDesc(); track v.angularMajor) {
             <mat-option [value]="v.angularMajor">Angular {{ v.angularMajor }}</mat-option>
           }
         </mat-select>

@@ -44,6 +44,7 @@ export class DiffViewComponent implements OnInit {
   private diffService = inject(DiffService);
 
   versions = signal<VersionEntry[]>([]);
+  versionsDesc = computed(() => this.versions().slice().reverse());
   fromMajor = signal<number | null>(null);
   toMajor = signal<number | null>(null);
   selectedFile = signal<string | null>(null);
