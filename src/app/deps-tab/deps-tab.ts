@@ -29,9 +29,13 @@ export class DepsTabComponent {
     }
   }
 
-  changeType(c: DepChange): 'added' | 'removed' | 'changed' {
+  changeType(c: DepChange): 'added' | 'removed' | 'major' | 'minor' | 'patch' {
     if (!c.fromVersion) return 'added';
     if (!c.toVersion) return 'removed';
-    return 'changed';
+    const [fMaj, fMin] = c.fromVersion.split('.').map(Number);
+    const [tMaj, tMin] = c.toVersion.split('.').map(Number);
+    if (tMaj !== fMaj) return 'major';
+    if (tMin !== fMin) return 'minor';
+    return 'patch';
   }
 }

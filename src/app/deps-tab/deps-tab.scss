@@ -56,7 +56,9 @@
   border-radius: 10px;
   font-size: 0.7rem;
 
-  &.badge-added { background: rgba(63,185,80,0.2); color: #3fb950; }
-  &.badge-removed { background: rgba(248,81,73,0.2); color: #f85149; }
-  &.badge-changed { background: rgba(210,153,34,0.2); color: #d29922; }
+  &.badge-added   { background: rgba(63,185,80,0.2);  color: #3fb950; }
+  &.badge-removed { background: rgba(248,81,73,0.2);  color: #f85149; }
+  &.badge-major   { background: rgba(248,81,73,0.2);  color: #f85149; }
+  &.badge-minor   { background: rgba(210,153,34,0.2); color: #d29922; }
+  &.badge-patch   { background: rgba(63,185,80,0.15); color: #7ee787; }
 }
