@@ -91,7 +91,7 @@ export class FileTreeComponent {
 
   private filterChanged(nodes: TreeNode[]): TreeNode[] {
     return nodes
-      .filter(n => n.status !== 'unchanged')
+      .filter(n => n.status !== 'unchanged' && n.status !== null)
       .map(n => ({ ...n, children: this.filterChanged(n.children) }));
   }
 
