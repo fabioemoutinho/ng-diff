@@ -31,7 +31,14 @@ export class DiffService {
         ? createTwoFilesPatch(file, file, fromContent, toContent, undefined, undefined, { context: 3 })
         : '';
 
-      result[file] = { status, patch, fromContent, toContent };
+      let addedLines = 0;
+      let removedLines = 0;
+      for (const line of patch.split('\n')) {
+        if (line.startsWith('+') && !line.startsWith('+++')) addedLines++;
+        else if (line.startsWith('-') && !line.startsWith('---')) removedLines++;
+      }
+
+      result[file] = { status, patch, fromContent, toContent, addedLines, removedLines };
     }
 
     return result;

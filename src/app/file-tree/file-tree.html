@@ -28,6 +28,13 @@
 
         <span class="node-name">{{ node.name }}</span>
 
+        @if (!node.isDir && node.addedLines > 0) {
+          <span class="line-stat stat-added">+{{ node.addedLines }}</span>
+        }
+        @if (!node.isDir && node.removedLines > 0) {
+          <span class="line-stat stat-removed">-{{ node.removedLines }}</span>
+        }
+
         @if (node.status && node.status !== 'unchanged') {
           <mat-icon class="status-icon" [matTooltip]="node.status">
             {{ statusIcon(node.status) }}

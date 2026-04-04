@@ -75,6 +75,15 @@
   flex-shrink: 0;
 }
 
+.line-stat {
+  font-size: 0.65rem;
+  font-family: 'Roboto Mono', monospace;
+  flex-shrink: 0;
+}
+
+.stat-added  { color: #3fb950; }
+.stat-removed { color: #f85149; }
+
 /* Status colours */
 .status-unchanged { color: rgba(255,255,255,0.35); .node-icon { color: rgba(255,255,255,0.2); } }
 .status-added     { color: #3fb950; .node-icon, .status-icon { color: #3fb950; } }

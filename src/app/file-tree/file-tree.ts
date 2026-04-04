@@ -12,6 +12,8 @@ interface TreeNode {
   status: FileStatus | null;
   children: TreeNode[];
   expanded: boolean;
+  addedLines: number;
+  removedLines: number;
 }
 
 @Component({
@@ -59,6 +61,8 @@ export class FileTreeComponent {
             status: isLast ? entry.status : null,
             children: [],
             expanded: true,
+            addedLines: isLast ? entry.addedLines : 0,
+            removedLines: isLast ? entry.removedLines : 0,
           };
           current.push(node);
         }

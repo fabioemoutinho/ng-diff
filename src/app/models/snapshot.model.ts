@@ -28,6 +28,8 @@ export interface FileDiffEntry {
   patch: string;
   fromContent: string;
   toContent: string;
+  addedLines: number;
+  removedLines: number;
 }
 
 export type DiffResult = Record<string, FileDiffEntry>;

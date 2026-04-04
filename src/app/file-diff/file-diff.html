@@ -40,7 +40,9 @@
         <tbody>
           @for (line of lines(); track $index) {
             <tr [class]="'line-' + line.type">
-              <td class="line-gutter">
+              <td class="line-gutter line-no">{{ line.leftLineNo ?? '' }}</td>
+              <td class="line-gutter line-no">{{ line.rightLineNo ?? '' }}</td>
+              <td class="line-gutter line-sign">
                 @if (line.type === 'added') { + }
                 @else if (line.type === 'removed') { - }
                 @else if (line.type === 'hunk') { @@ }
@@ -56,24 +58,34 @@
           @for (row of sideBySideRows(); track $index) {
             @if (row.type === 'hunk') {
               <tr class="line-hunk">
-                <td class="line-gutter">@@</td>
-                <td class="line-content" colspan="3"><pre>{{ row.left }}</pre></td>
+                <td class="line-gutter line-no"></td>
+                <td class="line-content side-left" colspan="3"><pre>{{ row.left }}</pre></td>
               </tr>
             } @else {
               <tr>
-                <td class="line-gutter" [class.gutter-removed]="row.left !== null && row.type === 'changed'">
-                  {{ row.left !== null && row.type === 'changed' ? '-' : '' }}
+                <td class="line-gutter line-no" [class.gutter-removed]="row.left !== null && row.type === 'changed'">
+                  {{ row.leftLineNo ?? '' }}
                 </td>
                 <td class="line-content side-left"
-                    [class.line-removed]="row.left !== null && row.type === 'changed'">
-                  <pre>{{ row.left ?? '' }}</pre>
+                    [class.line-removed]="row.left !== null && row.type === 'changed'"
+                    [class.side-empty]="row.left === null">
+                  @if (row.leftHtml) {
+                    <pre [innerHTML]="row.leftHtml"></pre>
+                  } @else {
+                    <pre>{{ row.left ?? '' }}</pre>
+                  }
                 </td>
-                <td class="line-gutter" [class.gutter-added]="row.right !== null && row.type === 'changed'">
-                  {{ row.right !== null && row.type === 'changed' ? '+' : '' }}
+                <td class="line-gutter line-no" [class.gutter-added]="row.right !== null && row.type === 'changed'">
+                  {{ row.rightLineNo ?? '' }}
                 </td>
                 <td class="line-content side-right"
-                    [class.line-added]="row.right !== null && row.type === 'changed'">
-                  <pre>{{ row.right ?? '' }}</pre>
+                    [class.line-added]="row.right !== null && row.type === 'changed'"
+                    [class.side-empty]="row.right === null">
+                  @if (row.rightHtml) {
+                    <pre [innerHTML]="row.rightHtml"></pre>
+                  } @else {
+                    <pre>{{ row.right ?? '' }}</pre>
+                  }
                 </td>
               </tr>
             }

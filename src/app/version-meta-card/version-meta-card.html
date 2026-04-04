@@ -4,6 +4,11 @@
   <div class="meta-row">
     <span class="meta-key">Angular</span>
     <span class="meta-val">{{ snapshot.deps.angular.version ?? 'v' + snapshot.angularMajor }}</span>
+    <a class="release-notes-link"
+       [href]="'https://github.com/angular/angular/releases/tag/' + snapshot.angularMajor + '.0.0'"
+       target="_blank" rel="noopener">
+      release notes
+    </a>
   </div>
 
   <div class="meta-row">

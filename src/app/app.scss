@@ -35,4 +35,9 @@
   height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 600px) {
+    margin-top: 56px;
+    height: calc(100vh - 56px);
+  }
 }

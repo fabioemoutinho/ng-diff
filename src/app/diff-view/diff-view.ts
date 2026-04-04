@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
@@ -43,12 +43,25 @@ export class DiffViewComponent implements OnInit {
   private dataService = inject(DataService);
   private diffService = inject(DiffService);
 
+  @ViewChild('fileDiffPanel') fileDiffPanel!: ElementRef<HTMLDivElement>;
+
   versions = signal<VersionEntry[]>([]);
   versionsDesc = computed(() => this.versions().toReversed());
   fromMajor = signal<number | null>(null);
   toMajor = signal<number | null>(null);
   selectedFile = signal<string | null>(null);
   treeOpen = signal(false);
+
+  constructor() {
+    effect((onCleanup) => {
+      document.body.style.overflow = this.treeOpen() ? 'hidden' : '';
+      onCleanup(() => { document.body.style.overflow = ''; });
+    });
+    effect(() => {
+      this.selectedFile();
+      this.fileDiffPanel?.nativeElement && (this.fileDiffPanel.nativeElement.scrollTop = 0);
+    });
+  }
 
   fromSnapshot = signal<Snapshot | null>(null);
   toSnapshot = signal<Snapshot | null>(null);

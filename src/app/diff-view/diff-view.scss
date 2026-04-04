@@ -41,6 +41,20 @@
   flex-shrink: 0;
 }
 
+.update-guide-link {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  color: #58a6ff;
+  text-decoration: none;
+  margin-left: auto;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &:hover { text-decoration: underline; }
+}
+
 .summary-added { color: #3fb950; }
 .summary-removed { color: #f85149; }
 .summary-modified { color: #d29922; }
@@ -144,7 +158,7 @@
 
   .file-tree-panel {
     position: fixed;
-    top: 64px;
+    top: 56px;
     bottom: 0;
     left: 0;
     z-index: 20;
@@ -160,7 +174,7 @@
   .tree-backdrop {
     display: block;
     position: fixed;
-    top: 64px;
+    top: 56px;
     bottom: 0;
     left: 0;
     right: 0;

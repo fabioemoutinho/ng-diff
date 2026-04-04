@@ -36,6 +36,16 @@
   row-gap: 0;
 }
 
+.release-notes-link {
+  font-size: 0.68rem;
+  color: #58a6ff;
+  text-decoration: none;
+  white-space: nowrap;
+  align-self: center;
+
+  &:hover { text-decoration: underline; }
+}
+
 .meta-range {
   font-size: 0.7rem;
   color: rgba(255,255,255,0.35);

@@ -34,6 +34,14 @@
       </button>
     </div>
 
+    @if (fromMajor() && toMajor()) {
+      <a class="update-guide-link"
+         [href]="'https://update.angular.io/?v=' + fromMajor() + '.0-' + toMajor() + '.0'"
+         target="_blank" rel="noopener">
+        Update guide
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    }
   </div>
 
   <!-- Summary bar -->
@@ -85,7 +93,7 @@
               (fileSelected)="onFileSelect($event)"
             />
           </div>
-          <div class="file-diff-panel">
+          <div class="file-diff-panel" #fileDiffPanel>
             <app-file-diff
               [file]="selectedFile()"
               [diffResult]="diffResult()!"
