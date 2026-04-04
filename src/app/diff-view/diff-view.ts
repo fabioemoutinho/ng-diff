@@ -99,30 +99,20 @@ export class DiffViewComponent implements OnInit {
     this.navigate(this.fromMajor()!, major);
   }
 
-  stepFrom(dir: 1 | -1) {
+  stepBoth(dir: 1 | -1) {
     const versions = this.versions();
-    const idx = versions.findIndex(v => v.angularMajor === this.fromMajor());
-    const next = versions[idx + dir];
-    if (next) this.navigate(next.angularMajor, this.toMajor()!);
+    const fromIdx = versions.findIndex(v => v.angularMajor === this.fromMajor());
+    const toIdx = versions.findIndex(v => v.angularMajor === this.toMajor());
+    const nextFrom = versions[fromIdx + dir];
+    const nextTo = versions[toIdx + dir];
+    if (nextFrom && nextTo) this.navigate(nextFrom.angularMajor, nextTo.angularMajor);
   }
 
-  stepTo(dir: 1 | -1) {
+  canStepBoth(dir: 1 | -1): boolean {
     const versions = this.versions();
-    const idx = versions.findIndex(v => v.angularMajor === this.toMajor());
-    const next = versions[idx + dir];
-    if (next) this.navigate(this.fromMajor()!, next.angularMajor);
-  }
-
-  canStepFrom(dir: 1 | -1): boolean {
-    const versions = this.versions();
-    const idx = versions.findIndex(v => v.angularMajor === this.fromMajor());
-    return !!versions[idx + dir];
-  }
-
-  canStepTo(dir: 1 | -1): boolean {
-    const versions = this.versions();
-    const idx = versions.findIndex(v => v.angularMajor === this.toMajor());
-    return !!versions[idx + dir];
+    const fromIdx = versions.findIndex(v => v.angularMajor === this.fromMajor());
+    const toIdx = versions.findIndex(v => v.angularMajor === this.toMajor());
+    return !!versions[fromIdx + dir] && !!versions[toIdx + dir];
   }
 
   onFileSelect(file: string) {
