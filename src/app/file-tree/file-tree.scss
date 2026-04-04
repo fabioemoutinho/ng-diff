@@ -76,6 +76,7 @@
 }
 
 /* Status colours */
-.status-added { color: #3fb950; .node-icon, .status-icon { color: #3fb950; } }
-.status-removed { color: #f85149; .node-icon, .status-icon { color: #f85149; } }
-.status-modified { color: #d29922; .node-icon, .status-icon { color: #d29922; } }
+.status-unchanged { color: rgba(255,255,255,0.35); .node-icon { color: rgba(255,255,255,0.2); } }
+.status-added     { color: #3fb950; .node-icon, .status-icon { color: #3fb950; } }
+.status-removed   { color: #f85149; .node-icon, .status-icon { color: #f85149; } }
+.status-modified  { color: #d29922; .node-icon, .status-icon { color: #d29922; } }
