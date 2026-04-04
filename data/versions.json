@@ -1,7 +1,7 @@
 [
   {
     "angularMajor": 4,
-    "generatedAt": "2026-04-03",
+    "generatedAt": "2026-04-04",
     "deps": {
       "angular": {
         "version": "4.2.4"
@@ -26,7 +26,7 @@
   },
   {
     "angularMajor": 5,
-    "generatedAt": "2026-04-03",
+    "generatedAt": "2026-04-04",
     "deps": {
       "angular": {
         "version": "5.2.0"
@@ -51,7 +51,7 @@
   },
   {
     "angularMajor": 6,
-    "generatedAt": "2026-04-03",
+    "generatedAt": "2026-04-04",
     "deps": {
       "angular": {
         "version": "6.1.0"
