@@ -9,21 +9,77 @@
     <span class="status-badge" [class]="'badge-' + entry()!.status">
       {{ entry()!.status }}
     </span>
+    <span class="spacer"></span>
+    @if (entry()!.status !== 'added') {
+      <button class="copy-btn" (click)="copy('from')" matTooltip="Copy original file">
+        <mat-icon>{{ copiedSide() === 'from' ? 'check' : 'content_copy' }}</mat-icon>
+        <span>{{ entry()!.status === 'unchanged' ? 'copy' : (fromMajor !== null ? 'v' + fromMajor : 'from') }}</span>
+      </button>
+    }
+    @if (entry()!.status !== 'removed' && entry()!.status !== 'unchanged') {
+      <button class="copy-btn" (click)="copy('to')" matTooltip="Copy new file">
+        <mat-icon>{{ copiedSide() === 'to' ? 'check' : 'content_copy' }}</mat-icon>
+        <span>{{ toMajor !== null ? 'v' + toMajor : 'to' }}</span>
+      </button>
+    }
+    @if (entry()!.status === 'modified') {
+      <mat-button-toggle-group [value]="viewMode()" (change)="viewMode.set($event.value)" class="view-toggle">
+        <mat-button-toggle value="inline" matTooltip="Inline">
+          <mat-icon>view_stream</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="side-by-side" matTooltip="Side by side">
+          <mat-icon>vertical_split</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    }
   </div>
+
   <div class="diff-content">
-    <table class="diff-table">
-      <tbody>
-        @for (line of lines(); track $index) {
-          <tr [class]="'line-' + line.type">
-            <td class="line-gutter">
-              @if (line.type === 'added') { + }
-              @else if (line.type === 'removed') { - }
-              @else if (line.type === 'hunk') { @@ }
-            </td>
-            <td class="line-content"><pre>{{ line.content }}</pre></td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    @if (viewMode() === 'inline') {
+      <table class="diff-table">
+        <tbody>
+          @for (line of lines(); track $index) {
+            <tr [class]="'line-' + line.type">
+              <td class="line-gutter">
+                @if (line.type === 'added') { + }
+                @else if (line.type === 'removed') { - }
+                @else if (line.type === 'hunk') { @@ }
+              </td>
+              <td class="line-content"><pre>{{ line.content }}</pre></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <table class="diff-table side-by-side">
+        <tbody>
+          @for (row of sideBySideRows(); track $index) {
+            @if (row.type === 'hunk') {
+              <tr class="line-hunk">
+                <td class="line-gutter">@@</td>
+                <td class="line-content" colspan="3"><pre>{{ row.left }}</pre></td>
+              </tr>
+            } @else {
+              <tr>
+                <td class="line-gutter" [class.gutter-removed]="row.left !== null && row.type === 'changed'">
+                  {{ row.left !== null && row.type === 'changed' ? '-' : '' }}
+                </td>
+                <td class="line-content side-left"
+                    [class.line-removed]="row.left !== null && row.type === 'changed'">
+                  <pre>{{ row.left ?? '' }}</pre>
+                </td>
+                <td class="line-gutter" [class.gutter-added]="row.right !== null && row.type === 'changed'">
+                  {{ row.right !== null && row.type === 'changed' ? '+' : '' }}
+                </td>
+                <td class="line-content side-right"
+                    [class.line-added]="row.right !== null && row.type === 'changed'">
+                  <pre>{{ row.right ?? '' }}</pre>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    }
   </div>
 }
