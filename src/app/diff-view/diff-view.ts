@@ -99,6 +99,32 @@ export class DiffViewComponent implements OnInit {
     this.navigate(this.fromMajor()!, major);
   }
 
+  stepFrom(dir: 1 | -1) {
+    const versions = this.versions();
+    const idx = versions.findIndex(v => v.angularMajor === this.fromMajor());
+    const next = versions[idx + dir];
+    if (next) this.navigate(next.angularMajor, this.toMajor()!);
+  }
+
+  stepTo(dir: 1 | -1) {
+    const versions = this.versions();
+    const idx = versions.findIndex(v => v.angularMajor === this.toMajor());
+    const next = versions[idx + dir];
+    if (next) this.navigate(this.fromMajor()!, next.angularMajor);
+  }
+
+  canStepFrom(dir: 1 | -1): boolean {
+    const versions = this.versions();
+    const idx = versions.findIndex(v => v.angularMajor === this.fromMajor());
+    return !!versions[idx + dir];
+  }
+
+  canStepTo(dir: 1 | -1): boolean {
+    const versions = this.versions();
+    const idx = versions.findIndex(v => v.angularMajor === this.toMajor());
+    return !!versions[idx + dir];
+  }
+
   onFileSelect(file: string) {
     this.selectedFile.set(file);
     const from = this.fromMajor()!;

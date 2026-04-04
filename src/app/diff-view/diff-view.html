@@ -2,6 +2,9 @@
   <!-- Toolbar row -->
   <div class="controls-bar">
     <div class="version-selectors">
+      <button mat-icon-button (click)="stepFrom(-1)" [disabled]="!canStepFrom(-1)" matTooltip="Previous version">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
       <mat-form-field appearance="outline" class="version-select">
         <mat-label>From</mat-label>
         <mat-select [value]="fromMajor()" (valueChange)="onFromChange($event)">
@@ -10,9 +13,15 @@
           }
         </mat-select>
       </mat-form-field>
+      <button mat-icon-button (click)="stepFrom(1)" [disabled]="!canStepFrom(1)" matTooltip="Next version">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
 
       <mat-icon class="arrow-icon">arrow_forward</mat-icon>
 
+      <button mat-icon-button (click)="stepTo(-1)" [disabled]="!canStepTo(-1)" matTooltip="Previous version">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
       <mat-form-field appearance="outline" class="version-select">
         <mat-label>To</mat-label>
         <mat-select [value]="toMajor()" (valueChange)="onToChange($event)">
@@ -21,6 +30,9 @@
           }
         </mat-select>
       </mat-form-field>
+      <button mat-icon-button (click)="stepTo(1)" [disabled]="!canStepTo(1)" matTooltip="Next version">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </div>
 
     <div class="controls-actions">

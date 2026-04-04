@@ -17,7 +17,11 @@
 .version-selectors {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+
+  button[mat-icon-button] {
+    margin-top: -20px;
+  }
 }
 
 .version-select {
