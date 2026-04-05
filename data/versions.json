@@ -76,7 +76,7 @@
   },
   {
     "angularMajor": 7,
-    "generatedAt": "2026-04-04",
+    "generatedAt": "2026-04-05",
     "deps": {
       "angular": {
         "version": "7.2.0"
@@ -101,7 +101,7 @@
   },
   {
     "angularMajor": 8,
-    "generatedAt": "2026-04-04",
+    "generatedAt": "2026-04-05",
     "deps": {
       "angular": {
         "version": "8.2.14"
