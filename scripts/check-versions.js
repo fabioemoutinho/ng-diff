@@ -32,23 +32,33 @@ function fetchJson(url) {
   });
 }
 
-async function getLatestCliPatch(cliVersion) {
-  const [major, minor] = cliVersion.split('.');
-  const prefix = `${major}.${minor}.`;
-  try {
-    const data = await fetchJson(`https://registry.npmjs.org/@angular/cli`);
-    const matching = Object.keys(data.versions)
-      .filter(v => v.startsWith(prefix) && !v.includes('-'))
-      .sort((a, b) => {
-        const pa = a.split('.').map(Number);
-        const pb = b.split('.').map(Number);
-        for (let i = 0; i < 3; i++) if (pa[i] !== pb[i]) return pa[i] - pb[i];
-        return 0;
-      });
-    return matching[matching.length - 1] || cliVersion;
-  } catch {
-    return cliVersion;
+/**
+ * Find the latest stable CLI version for a VERSION_MAP entry from a
+ * pre-fetched list of all published versions.
+ *
+ * CLI 1.x (Angular 4-5): search within the same minor (1.4.x, 1.7.x)
+ *   because both Angular 4 and 5 share CLI major 1.
+ * CLI 6+  (Angular 6+):  search the entire major (CLI major = Angular major)
+ *   so new minor versions (e.g. 19.3.0) are detected automatically.
+ */
+function findLatestCli(entry, allVersions) {
+  const cv = entry.cliVersion;
+  let prefix;
+  if (cv.startsWith('1.')) {
+    const [maj, min] = cv.split('.');
+    prefix = `${maj}.${min}.`;
+  } else {
+    prefix = `${entry.angularMajor}.`;
   }
+  const matching = allVersions
+    .filter(v => v.startsWith(prefix))
+    .sort((a, b) => {
+      const pa = a.split('.').map(Number);
+      const pb = b.split('.').map(Number);
+      for (let i = 0; i < 3; i++) if (pa[i] !== pb[i]) return pa[i] - pb[i];
+      return 0;
+    });
+  return matching[matching.length - 1] || cv;
 }
 
 async function main() {
@@ -57,11 +67,18 @@ async function main() {
     generated = JSON.parse(fs.readFileSync(VERSIONS_FILE, 'utf8'));
   }
 
-  const generatedMap = Object.fromEntries(generated.map(e => [e.angularMajor, e.cliVersion]));
+  const generatedMap = Object.fromEntries(
+    generated.map(e => [e.angularMajor, e.deps && e.deps.cli ? e.deps.cli.version : null])
+  );
+
+  // Fetch all published CLI versions from npm once (instead of per-entry)
+  const npmData = await fetchJson('https://registry.npmjs.org/@angular/cli');
+  const allVersions = Object.keys(npmData.versions).filter(v => !v.includes('-'));
+
   const needsUpdate = [];
 
   for (const entry of VERSION_MAP) {
-    const latestCli = await getLatestCliPatch(entry.cliVersion);
+    const latestCli = findLatestCli(entry, allVersions);
     const currentCli = generatedMap[entry.angularMajor];
     if (currentCli !== latestCli) {
       console.error('Angular ' + entry.angularMajor + ': generated=' + (currentCli || 'none') + ', latest=' + latestCli);

@@ -5,8 +5,9 @@
  * Generates ng-new snapshots for one or more Angular major versions.
  *
  * Usage:
- *   node scripts/generate.js                          # all versions in version-map.js
+ *   node scripts/generate.js                          # all versions (skips up-to-date)
  *   node scripts/generate.js --versions '[17,18,21]'  # specific Angular majors
+ *   node scripts/generate.js --force                  # regenerate all, ignore skip logic
  *   node scripts/generate.js --versions '[17]' --node-group '[17,18,19,20,21]'
  *     # CI matrix mode: only processes majors in the intersection of --versions and --node-group
  *
@@ -33,6 +34,7 @@ function getArg(name) {
 
 const versionsArg = getArg('--versions');
 const nodeGroupArg = getArg('--node-group');
+const forceRegen = args.includes('--force');
 
 let targetMajors = VERSION_MAP.map(e => e.angularMajor);
 if (versionsArg) {
@@ -72,6 +74,41 @@ function rmRecursive(dir) {
     if (fs.statSync(full).isDirectory()) { rmRecursive(full); } else { fs.unlinkSync(full); }
   }
   fs.rmdirSync(dir);
+}
+
+// --- npm registry helpers (used to discover latest CLI versions) ---
+
+function fetchJson(url) {
+  return new Promise(function(resolve, reject) {
+    require('https').get(url, { headers: { 'User-Agent': 'ng-diff/1.0' } }, function(res) {
+      var data = '';
+      res.on('data', function(chunk) { data += chunk; });
+      res.on('end', function() {
+        try { resolve(JSON.parse(data)); }
+        catch (e) { reject(e); }
+      });
+    }).on('error', reject);
+  });
+}
+
+function findLatestCli(entry, allVersions) {
+  var cv = entry.cliVersion;
+  var prefix;
+  if (cv.startsWith('1.')) {
+    var parts = cv.split('.');
+    prefix = parts[0] + '.' + parts[1] + '.';
+  } else {
+    prefix = entry.angularMajor + '.';
+  }
+  var matching = allVersions
+    .filter(function(v) { return v.indexOf(prefix) === 0; })
+    .sort(function(a, b) {
+      var pa = a.split('.').map(Number);
+      var pb = b.split('.').map(Number);
+      for (var i = 0; i < 3; i++) { if (pa[i] !== pb[i]) return pa[i] - pb[i]; }
+      return 0;
+    });
+  return matching[matching.length - 1] || cv;
 }
 
 // --- Node version manager detection ---
@@ -183,25 +220,27 @@ function collectFiles(dir, baseDir) {
   return files;
 }
 
-function buildDeps(files, entry, nodeVersionUsed) {
+function buildDeps(files, entry, nodeVersionUsed, cliVersion) {
+  cliVersion = cliVersion || entry.cliVersion;
   var pkg = {};
   try { pkg = JSON.parse(files['package.json'] || '{}'); } catch (e) {}
   var allDeps = {};
   if (pkg.dependencies) Object.assign(allDeps, pkg.dependencies);
   if (pkg.devDependencies) Object.assign(allDeps, pkg.devDependencies);
   function cleanVer(v) { return v ? v.replace(/[\^~>=<]/g, '').split(' ')[0] : null; }
-  var cliRange = entry.cliVersion.startsWith('1.') ? '^1.0.0' : '^' + entry.angularMajor + '.0.0';
+  var cliRange = entry.angularMajor <= 5 ? '^1.0.0' : '^' + entry.angularMajor + '.0.0';
   return {
     angular:    { version: cleanVer(allDeps['@angular/core']) },
-    cli:        { version: entry.cliVersion, supported: cliRange },
+    cli:        { version: cliVersion, supported: cliRange },
     node:       { version: nodeVersionUsed, supported: entry.nodeRange },
     typescript: { version: cleanVer(allDeps['typescript']), supported: entry.tsRange },
     rxjs:       { version: cleanVer(allDeps['rxjs']), supported: entry.rxjsRange },
   };
 }
 
-function generateSnapshot(entry) {
-  const { angularMajor, cliVersion, nodeVersion } = entry;
+function generateSnapshot(entry, cliVersionOverride) {
+  const { angularMajor, nodeVersion } = entry;
+  const cliVersion = cliVersionOverride || entry.cliVersion;
   // Use a parent temp dir; ng new will create a 'ng-diff-app' subdirectory inside it
   const tmpParent = path.join(os.tmpdir(), 'ng-diff-tmp-' + angularMajor);
   const appDir = path.join(tmpParent, 'ng-diff-app');
@@ -285,7 +324,7 @@ function generateSnapshot(entry) {
   const snapshot = {
     angularMajor,
     generatedAt: new Date().toISOString().split('T')[0],
-    deps: buildDeps(files, entry, nodeVersionUsed),
+    deps: buildDeps(files, entry, nodeVersionUsed, cliVersion),
     files,
   };
 
@@ -306,7 +345,7 @@ function updateVersionsIndex() {
     const snapshotPath = path.join(SNAPSHOTS_DIR, String(entry.angularMajor), 'default.json');
     if (!fs.existsSync(snapshotPath)) continue;
     const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
-    var cliRange = entry.cliVersion.startsWith('1.') ? '^1.0.0' : '^' + entry.angularMajor + '.0.0';
+    var cliRange = entry.angularMajor <= 5 ? '^1.0.0' : '^' + entry.angularMajor + '.0.0';
     // Support both new (deps) and old (packageMeta) snapshot formats
     var deps = snapshot.deps || {};
     var pm = snapshot.packageMeta || {};
@@ -315,7 +354,7 @@ function updateVersionsIndex() {
       generatedAt: snapshot.generatedAt,
       deps: {
         angular:    { version: (deps.angular && deps.angular.version) || pm.angularVersion || null },
-        cli:        { version: entry.cliVersion, supported: cliRange },
+        cli:        { version: (deps.cli && deps.cli.version) || entry.cliVersion, supported: cliRange },
         node:       { version: (deps.node && deps.node.version) || snapshot.nodeVersionUsed || null, supported: entry.nodeRange },
         typescript: { version: (deps.typescript && deps.typescript.version) || pm.typescriptVersion || null, supported: entry.tsRange },
         rxjs:       { version: (deps.rxjs && deps.rxjs.version) || pm.rxjsVersion || null, supported: entry.rxjsRange },
@@ -336,17 +375,53 @@ async function main() {
 
   mkdirSafe(SNAPSHOTS_DIR);
 
+  // Fetch latest CLI versions from npm to detect new patches/minors
+  var latestCliMap = {};
+  try {
+    console.log('Fetching latest CLI versions from npm...');
+    var npmData = await fetchJson('https://registry.npmjs.org/@angular/cli');
+    var allNpmVersions = Object.keys(npmData.versions).filter(function(v) { return v.indexOf('-') === -1; });
+    for (var i = 0; i < VERSION_MAP.length; i++) {
+      var e = VERSION_MAP[i];
+      latestCliMap[e.angularMajor] = findLatestCli(e, allNpmVersions);
+    }
+  } catch (err) {
+    console.warn('Could not fetch npm data, using version-map.js versions: ' + err.message);
+  }
+
   let successCount = 0;
+  let skipCount = 0;
   for (const major of targetMajors) {
     const entry = VERSION_MAP.find(e => e.angularMajor === major);
     if (!entry) { console.warn(`No entry for Angular major ${major}, skipping.`); continue; }
-    console.log(`\nGenerating Angular ${major} (CLI ${entry.cliVersion}, Node ${entry.nodeVersion})...`);
-    const ok = generateSnapshot(entry);
+
+    // Use npm-discovered latest CLI version, fall back to version-map.js
+    const targetCliVersion = latestCliMap[major] || entry.cliVersion;
+
+    // Skip if existing snapshot is already at the target CLI version
+    if (!forceRegen) {
+      const snapshotPath = path.join(SNAPSHOTS_DIR, String(major), 'default.json');
+      if (fs.existsSync(snapshotPath)) {
+        try {
+          const existing = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+          const existingCli = existing.deps && existing.deps.cli ? existing.deps.cli.version : null;
+          if (existingCli === targetCliVersion) {
+            console.log(`\nAngular ${major}: already at CLI ${targetCliVersion}, skipping.`);
+            skipCount++;
+            continue;
+          }
+          console.log(`\nAngular ${major}: CLI ${existingCli || 'none'} -> ${targetCliVersion}`);
+        } catch (e) { /* corrupt snapshot, regenerate */ }
+      }
+    }
+
+    console.log(`Generating Angular ${major} (CLI ${targetCliVersion}, Node ${entry.nodeVersion})...`);
+    const ok = generateSnapshot(entry, targetCliVersion);
     if (ok) successCount++;
   }
 
   updateVersionsIndex();
-  console.log(`\nDone. ${successCount}/${targetMajors.length} snapshots generated.`);
+  console.log(`\nDone. ${successCount} generated, ${skipCount} skipped (already up-to-date).`);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

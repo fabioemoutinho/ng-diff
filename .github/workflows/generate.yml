@@ -50,7 +50,7 @@ jobs:
       - name: Generate snapshots for this Node group
         run: |
           if [ "${{ inputs.force }}" = "true" ]; then
-            node scripts/generate.js --node-group '${{ matrix.angular-majors }}'
+            node scripts/generate.js --force --node-group '${{ matrix.angular-majors }}'
           else
             node scripts/generate.js \
               --versions '${{ inputs.versions }}' \
