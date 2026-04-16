@@ -401,13 +401,13 @@
   },
   {
     "angularMajor": 20,
-    "generatedAt": "2026-04-09",
+    "generatedAt": "2026-04-16",
     "deps": {
       "angular": {
         "version": "20.3.0"
       },
       "cli": {
-        "version": "20.3.23",
+        "version": "20.3.24",
         "supported": "^20.0.0"
       },
       "node": {
