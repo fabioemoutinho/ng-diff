@@ -376,13 +376,13 @@
   },
   {
     "angularMajor": 19,
-    "generatedAt": "2026-04-09",
+    "generatedAt": "2026-04-30",
     "deps": {
       "angular": {
         "version": "19.2.0"
       },
       "cli": {
-        "version": "19.2.24",
+        "version": "19.2.25",
         "supported": "^19.0.0"
       },
       "node": {
