@@ -426,13 +426,13 @@
   },
   {
     "angularMajor": 21,
-    "generatedAt": "2026-04-30",
+    "generatedAt": "2026-05-07",
     "deps": {
       "angular": {
         "version": "21.2.0"
       },
       "cli": {
-        "version": "21.2.9",
+        "version": "21.2.10",
         "supported": "^21.0.0"
       },
       "node": {
