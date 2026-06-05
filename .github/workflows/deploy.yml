@@ -6,13 +6,10 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
+      - 'data/**'
       - 'angular.json'
       - 'package.json'
       - 'package-lock.json'
-  workflow_run:
-    workflows: ["Generate snapshots"]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -26,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
