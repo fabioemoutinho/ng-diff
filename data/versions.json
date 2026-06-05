@@ -448,5 +448,30 @@
         "supported": "^6.5.3 || ^7.4.0"
       }
     }
+  },
+  {
+    "angularMajor": 22,
+    "generatedAt": "2026-06-05",
+    "deps": {
+      "angular": {
+        "version": "22.0.0"
+      },
+      "cli": {
+        "version": "22.0.0",
+        "supported": "^22.0.0"
+      },
+      "node": {
+        "version": "26.3.0",
+        "supported": "^22.22.3 || ^24.15.0 || >=26.0.0"
+      },
+      "typescript": {
+        "version": "6.0.2",
+        "supported": ">=6.0 <6.1"
+      },
+      "rxjs": {
+        "version": "7.8.0",
+        "supported": "^6.5.3 || ^7.4.0"
+      }
+    }
   }
 ]
