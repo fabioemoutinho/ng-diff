@@ -4,41 +4,35 @@ on:
   workflow_dispatch:
     inputs:
       versions:
-        description: 'JSON array of Angular major versions to generate, e.g. [17,18,21]'
+        description: 'JSON array of Angular major versions to generate, e.g. [17,18,21]. Empty means all.'
         required: false
         default: '[]'
       force:
-        description: 'Force regeneration of all versions in each node group, ignoring the versions filter'
+        description: 'Force regeneration of all versions, ignoring the skip logic'
         type: boolean
         default: false
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: build-matrix
+        run: node scripts/build-matrix.js --versions '${{ inputs.versions }}'
+
   generate:
+    needs: setup
     runs-on: ubuntu-latest
     permissions:
       contents: write
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - node-version: 8
-            angular-majors: '[4,5,6]'
-          - node-version: 10
-            angular-majors: '[7,8]'
-          - node-version: 12
-            angular-majors: '[9,10,11]'
-          - node-version: 14
-            angular-majors: '[12]'
-          - node-version: 16
-            angular-majors: '[13,14]'
-          - node-version: 18
-            angular-majors: '[15,16]'
-          - node-version: 20
-            angular-majors: '[17]'
-          - node-version: 22
-            angular-majors: '[18,19]'
-          - node-version: 24
-            angular-majors: '[20,21]'
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -47,14 +41,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Generate snapshots for this Node group
+      - name: Generate snapshots for Angular ${{ matrix.angular-majors }}
         run: |
           if [ "${{ inputs.force }}" = "true" ]; then
-            node scripts/generate.js --force --node-group '${{ matrix.angular-majors }}'
+            node scripts/generate.js --force --versions '${{ matrix.angular-majors }}'
           else
-            node scripts/generate.js \
-              --versions '${{ inputs.versions }}' \
-              --node-group '${{ matrix.angular-majors }}'
+            node scripts/generate.js --versions '${{ matrix.angular-majors }}'
           fi
 
       - name: Commit and push updated data
