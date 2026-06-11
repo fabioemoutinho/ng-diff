@@ -451,13 +451,13 @@
   },
   {
     "angularMajor": 22,
-    "generatedAt": "2026-06-05",
+    "generatedAt": "2026-06-11",
     "deps": {
       "angular": {
         "version": "22.0.0"
       },
       "cli": {
-        "version": "22.0.0",
+        "version": "22.0.1",
         "supported": "^22.0.0"
       },
       "node": {
