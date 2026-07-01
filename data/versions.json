@@ -401,17 +401,17 @@
   },
   {
     "angularMajor": 20,
-    "generatedAt": "2026-06-24",
+    "generatedAt": "2026-07-01",
     "deps": {
       "angular": {
         "version": "20.3.0"
       },
       "cli": {
-        "version": "20.3.30",
+        "version": "20.3.31",
         "supported": "^20.0.0"
       },
       "node": {
-        "version": "24.16.0",
+        "version": "24.17.0",
         "supported": "^20.19.0 || ^22.12.0 || ^24.0.0"
       },
       "typescript": {
@@ -426,17 +426,17 @@
   },
   {
     "angularMajor": 21,
-    "generatedAt": "2026-06-24",
+    "generatedAt": "2026-07-01",
     "deps": {
       "angular": {
         "version": "21.2.0"
       },
       "cli": {
-        "version": "21.2.17",
+        "version": "21.2.18",
         "supported": "^21.0.0"
       },
       "node": {
-        "version": "24.16.0",
+        "version": "24.17.0",
         "supported": "^20.19.0 || ^22.12.0 || ^24.0.0"
       },
       "typescript": {
