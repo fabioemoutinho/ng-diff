@@ -30,9 +30,9 @@ const VERSION_MAP = [
   { angularMajor: 17, angularVersion: '17.3.12', cliVersion: '17.3.17', nodeVersion: 20, nodeRange: '^18.13.0 || ^20.9.0', tsRange: '>=5.2.0 <5.5.0', rxjsRange: '^6.5.3 || ^7.4.0' },
   { angularMajor: 18, angularVersion: '18.2.13', cliVersion: '18.2.21', nodeVersion: 22, nodeRange: '^18.19.1 || ^20.11.1 || ^22.0.0', tsRange: '>=5.4.0 <5.6.0', rxjsRange: '^6.5.3 || ^7.4.0' },
   { angularMajor: 19, angularVersion: '19.2.14', cliVersion: '19.2.27', nodeVersion: 22, nodeRange: '^18.19.1 || ^20.11.1 || ^22.0.0', tsRange: '>=5.5.0 <5.9.0', rxjsRange: '^6.5.3 || ^7.4.0' },
-  { angularMajor: 20, angularVersion: '20.3.14', cliVersion: '20.3.31', nodeVersion: 24, nodeRange: '^20.19.0 || ^22.12.0 || ^24.0.0', tsRange: '>=5.8.0 <6.0.0', rxjsRange: '^6.5.3 || ^7.4.0' },
-  { angularMajor: 21, angularVersion: '21.2.6', cliVersion: '21.2.18', nodeVersion: 24, nodeRange: '^20.19.0 || ^22.12.0 || ^24.0.0', tsRange: '>=5.9.0 <6.0.0', rxjsRange: '^6.5.3 || ^7.4.0' },
-  { angularMajor: 22, angularVersion: '22.0.0', cliVersion: '22.0.5', nodeVersion: 26, nodeRange: '^22.22.3 || ^24.15.0 || >=26.0.0', tsRange: '>=6.0 <6.1', rxjsRange: '^6.5.3 || ^7.4.0' },
+  { angularMajor: 20, angularVersion: '20.3.14', cliVersion: '20.3.32', nodeVersion: 24, nodeRange: '^20.19.0 || ^22.12.0 || ^24.0.0', tsRange: '>=5.8.0 <6.0.0', rxjsRange: '^6.5.3 || ^7.4.0' },
+  { angularMajor: 21, angularVersion: '21.2.6', cliVersion: '21.2.19', nodeVersion: 24, nodeRange: '^20.19.0 || ^22.12.0 || ^24.0.0', tsRange: '>=5.9.0 <6.0.0', rxjsRange: '^6.5.3 || ^7.4.0' },
+  { angularMajor: 22, angularVersion: '22.0.0', cliVersion: '22.0.6', nodeVersion: 26, nodeRange: '^22.22.3 || ^24.15.0 || >=26.0.0', tsRange: '>=6.0 <6.1', rxjsRange: '^6.5.3 || ^7.4.0' },
 ];
 
 module.exports = { VERSION_MAP };
