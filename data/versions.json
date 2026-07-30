@@ -457,7 +457,7 @@
         "version": "22.1.0"
       },
       "cli": {
-        "version": "22.1.0",
+        "version": "22.1.2",
         "supported": "^22.0.0"
       },
       "node": {
