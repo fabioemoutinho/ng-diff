@@ -451,17 +451,17 @@
   },
   {
     "angularMajor": 22,
-    "generatedAt": "2026-08-26",
+    "generatedAt": "2026-09-03",
     "deps": {
       "angular": {
         "version": "22.1.0"
       },
       "cli": {
-        "version": "22.1.6",
+        "version": "22.1.7",
         "supported": "^22.0.0"
       },
       "node": {
-        "version": "26.7.0",
+        "version": "26.8.1",
         "supported": "^22.22.3 || ^24.15.0 || >=26.0.0"
       },
       "typescript": {
