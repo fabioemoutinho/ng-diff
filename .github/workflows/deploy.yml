@@ -10,11 +10,16 @@ on:
       - 'angular.json'
       - 'package.json'
       - 'package-lock.json'
+  workflow_run:
+    workflows: ["Generate snapshots"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: write
 
