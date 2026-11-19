@@ -454,10 +454,10 @@
     "generatedAt": "2026-11-19",
     "deps": {
       "angular": {
-        "version": "22.2.0"
+        "version": "22.3.0"
       },
       "cli": {
-        "version": "22.2.8",
+        "version": "22.3.0",
         "supported": "^22.0.0"
       },
       "node": {
